@@ -1,7 +1,7 @@
 from django.contrib import admin
 from backend.models.account import *
 from backend.models.admin_manager.admin_manager import LevelScolaship, SchoolCycle,SchoolSeries
-from backend.models.school_manager.school_manager import School
+from backend.models.school_manager.school_manager import *
 
 per_page = 20
 
@@ -9,6 +9,7 @@ admin.site.site_header = "ELIMU - Application de gestion scolaire"
 admin.site.site_title = "ELIMU - Application de gestion scolaire"
 admin.site.index_title = "Bienvenue dans l'interface d'administration ELIMU"
 
+admin.site.register(SchoolYear)
 
 # Register your models here.
 # model from admin_manager module

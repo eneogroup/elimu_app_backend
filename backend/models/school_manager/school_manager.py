@@ -50,4 +50,32 @@ class School(models.Model):
     class Meta:
         verbose_name = "École"
         verbose_name_plural = "Écoles"
+
+class SchoolYear(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    year = models.CharField(max_length=20, verbose_name="Année scolaire")
+    is_current_year = models.BooleanField(default=False, verbose_name="Année en cours")
+    start_date = models.DateField(verbose_name="Date de début")
+    end_date = models.DateField(verbose_name="Date de fin")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
+    
+    def __str__(self):
+        return f"{self.year} - {self.school.name}"
+    
+    class Meta:
+        verbose_name = "Année scolaire"
+        verbose_name_plural = "Années scolaires"
+    
+    def get_current_year(self):
+        from.school_manager import SchoolYear
+        current_year = SchoolYear.objects.filter(school=self.school, is_current_year=True).first()
+        return current_year.year if current_year else None
+    
+    def get_current_school_year(self):
+        from .school_manager import SchoolYear
+        current_school_year = SchoolYear.objects.filter(school=self.school, is_current_year=True).first()
+        return current_school_year
+    
     
