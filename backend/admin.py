@@ -75,7 +75,7 @@ class SchoolAdmin(admin.ModelAdmin):
     list_per_page = per_page
 
 
-@admin.register(StaffProfil)
+@admin.register(StaffProfile)
 class AdminAdmin(admin.ModelAdmin):
     list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
     search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
