@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-from backend.models.school_manager.school_manager import School
+from django.forms import ValidationError
+from django.urls import reverse
+from backend.models.school_manager.school_manager import School, UUID4Field
 
 genders = [
     ('Masculin', 'Masculin'),
@@ -117,6 +119,85 @@ class StaffProfil(models.Model):
     
     def __str__(self):
         return f"Profil de l'utilisateur : {self.user.username}"
+
+
+
+class ParentOfStudent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account_of_parent')
+    lastname = models.CharField(max_length=50, verbose_name="Nom", null=True, blank=True)
+    firstname = models.CharField(max_length=50, verbose_name="Prénom", null=True, blank=True)
+    nickname = models.CharField(max_length=50, verbose_name="Surnom", null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=genders, verbose_name="Sexe", null=True, blank=True)
+    nationality = models.CharField(max_length=50, verbose_name="Nationalité", null=True, blank=True)
+    birthplace = models.CharField(max_length=100, verbose_name="Lieu de naissance", null=True, blank=True)
+    phone = models.CharField(max_length=20, verbose_name="Téléphone", null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name="Adresse", null=True, blank=True)
+    date_of_birth = models.DateField(verbose_name="Date de naissance", null=True, blank=True)
+    photo = models.ImageField(upload_to='pupil_photos/', verbose_name="Photo", null=True, blank=True)
+    skype = models.CharField(max_length=50, verbose_name="Skype", null=True, blank=True)
+    gmail = models.EmailField(verbose_name="Gmail", null=True, blank=True)
+    discord = models.URLField(verbose_name="Discord", null=True, blank=True)
+    whatsapp = models.CharField(max_length=20, verbose_name="WhatsApp", null=True, blank=True)
+    facebook = models.URLField(verbose_name="Facebook", null=True, blank=True)
+    twitter = models.URLField(verbose_name="Twitter", null=True, blank=True)
+    instagram = models.URLField(verbose_name="Instagram", null=True, blank=True)
+    linkedin = models.URLField(verbose_name="LinkedIn", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Parent d'élève"
+        verbose_name_plural = "Parents d'élèves"
+    
+    def __str__(self):
+        return f"Parent : {self.lastname} {self.firstname}"
+    
+    
+
+class Pupil(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    matricule = UUID4Field(auto_created=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='pupil_profile', null=True, blank=True)
+    parents = models.ManyToManyField(ParentOfStudent, related_name='parents_of_pupils')
+    lastname = models.CharField(max_length=50, verbose_name="Nom", null=True, blank=True)
+    firstname = models.CharField(max_length=50, verbose_name="Prénom", null=True, blank=True)
+    nickname = models.CharField(max_length=50, verbose_name="Surnom", null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=genders, verbose_name="Sexe", null=True, blank=True)
+    nationality = models.CharField(max_length=50, verbose_name="Nationalité", null=True, blank=True)
+    birthplace = models.CharField(max_length=100, verbose_name="Lieu de naissance", null=True, blank=True)
+    phone = models.CharField(max_length=20, verbose_name="Téléphone", null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name="Adresse", null=True, blank=True)
+    date_of_birth = models.DateField(verbose_name="Date de naissance", null=True, blank=True)
+    photo = models.ImageField(upload_to='pupil_photos/', verbose_name="Photo", null=True, blank=True)
+    skype = models.CharField(max_length=50, verbose_name="Skype", null=True, blank=True)
+    gmail = models.EmailField(verbose_name="Gmail", null=True, blank=True)
+    discord = models.URLField(verbose_name="Discord", null=True, blank=True)
+    whatsapp = models.CharField(max_length=20, verbose_name="WhatsApp", null=True, blank=True)
+    facebook = models.URLField(verbose_name="Facebook", null=True, blank=True)
+    twitter = models.URLField(verbose_name="Twitter", null=True, blank=True)
+    instagram = models.URLField(verbose_name="Instagram", null=True, blank=True)
+    linkedin = models.URLField(verbose_name="LinkedIn", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    
+    
+    class Meta:
+        verbose_name = "Élève"
+        verbose_name_plural = "Élèves"
+    
+    def __str__(self):
+        return f"Elève : {self.lastname} {self.firstname}"
+
+    
+    def clean(self):
+        # Vérifier qu'un élève a au moins un parent et au maximum deux parents
+        if self.parents.all().count() < 1 or self.parents.all().count() > 2:
+            raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
+
+    
+    def display_parents(self):
+        return ", ".join([str(parent) for parent in self.parents.all()])
+    display_parents.short_description = 'Parents'
 
 
 

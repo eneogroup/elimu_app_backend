@@ -1,5 +1,5 @@
 from django.contrib import admin
-from backend.models.account import StaffProfil, User, UserRole
+from backend.models.account import *
 from backend.models.admin_manager.admin_manager import LevelScolaship, SchoolCycle,SchoolSeries
 from backend.models.school_manager.school_manager import School
 
@@ -79,11 +79,43 @@ class SchoolAdmin(admin.ModelAdmin):
 class AdminAdmin(admin.ModelAdmin):
     list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
     search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    
+    list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
     ordering = ('user__id',)
     fieldsets = (
         ('Utilisateur', {'fields': ('user',)}),
-        ('Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo', 'skype', 'gmail', 'discord')}),
+        ('Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
+
+
+@admin.register(ParentOfStudent)
+class ParentOfStudentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+    search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    ordering = ('user__id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('user',)}),
+        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
+
+
+
+@admin.register(Pupil)
+class PupilAdmin(admin.ModelAdmin):
+    list_display = ('id', 'matricule','user', 'display_parents', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+    search_fields = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'phone', 'address')
+    list_filter = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    ordering = ('user__id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('matricule', 'user', 'parents')}),
+        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
     )
     list_per_page = per_page
     readonly_fields=('created_at', 'updated_at')
