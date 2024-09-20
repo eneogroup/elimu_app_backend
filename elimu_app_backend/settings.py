@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'backend',
+    'api',
     
     #------------ app for restframework and others
     'corsheaders',
