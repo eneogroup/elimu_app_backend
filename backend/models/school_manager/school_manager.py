@@ -95,3 +95,31 @@ class Classroom(models.Model):
     class Meta:
         verbose_name = "Salle de classe"
         verbose_name_plural = "Salles de classes"
+
+class Inscription(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    student = models.ForeignKey("backend.Pupil", on_delete=models.CASCADE, verbose_name="Élève")
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, verbose_name="Année scolaire")
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name="Salle de classe")
+    is_paid = models.BooleanField(default=False, verbose_name="Payé")
+    is_active = models.BooleanField(default=True, verbose_name="Actif")
+    is_graduated = models.BooleanField(default=False, verbose_name="Élève admise")
+    is_transferred = models.BooleanField(default=False, verbose_name="Élève transféré(e)")
+    is_suspended = models.BooleanField(default=False, verbose_name="Élève suspendu(e)")
+    is_withdrawn = models.BooleanField(default=False, verbose_name="Élève retiré(e)")
+    is_reinscribed = models.BooleanField(default=False, verbose_name="Élève réinscrit(e)")
+    is_inscribed = models.BooleanField(default=False, verbose_name="Élève réinscrit(e)")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
+    
+    def __str__(self):
+        return f"{self.student.first_name} {self.student.last_name} - {self.school_year.year}"
+    
+    class Meta:
+        verbose_name = "Inscription"
+        verbose_name_plural = "Inscriptions"
+    
+    def get_student_name(self):
+        return f"{self.student.first_name} {self.student.last_name}"
+
+

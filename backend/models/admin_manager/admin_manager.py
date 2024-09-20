@@ -36,5 +36,39 @@ class SchoolLevel(models.Model):
     class Meta:
         verbose_name = "Niveau scolaire"
         verbose_name_plural = "Niveaux scolaires"
+
+
+class SubjectGroup(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    name = models.CharField(max_length=50, verbose_name="Nom du groupe de matière")
     
+    def __str__(self):
+        return self.name
     
+    class Meta:
+        verbose_name = "Groupe de matière"
+        verbose_name_plural = "Groupes de matières"
+
+
+class DocumentType(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    name = models.CharField(max_length=50, verbose_name="Nom du type de document")
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Type de document"
+        verbose_name_plural = "Types de documents"
+
+
+class SanctionOrAppreciationType(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    name = models.CharField(max_length=50, verbose_name="Nom du type de sanction ou d'appréciation")
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Type de sanction ou d'appréciation"
+        verbose_name_plural = "Types de sanctions ou d'appréciations"
