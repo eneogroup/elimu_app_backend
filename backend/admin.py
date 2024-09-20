@@ -1,6 +1,6 @@
 from django.contrib import admin
 from backend.models.account import *
-from backend.models.admin_manager.admin_manager import SchoolLevel, SchoolCycle,SchoolSeries
+from backend.models.admin_manager.admin_manager import *
 from backend.models.school_manager.school_manager import *
 
 per_page = 20
@@ -9,7 +9,6 @@ admin.site.site_header = "ELIMU - Application de gestion scolaire"
 admin.site.site_title = "ELIMU - Application de gestion scolaire"
 admin.site.index_title = "Bienvenue dans l'interface d'administration ELIMU"
 
-admin.site.register(Classroom)
 
 # Register your models here.
 # model from admin_manager module
@@ -36,6 +35,32 @@ class LevelScolashipAdmin(admin.ModelAdmin):
     list_filter = ('id', 'cycle', 'series')
     ordering = ('id',)
     list_per_page = per_page
+
+@admin.register(SubjectGroup)
+class SubjectGroupAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    search_fields = ('name',)
+    list_filter = ('id', 'name')
+    ordering = ('id',)
+    list_per_page = per_page
+
+@admin.register(DocumentType)
+class DocumentTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    search_fields = ('name',)
+    list_filter = ('id', 'name')
+    ordering = ('id',)
+    list_per_page = per_page
+
+@admin.register(SanctionOrAppreciationType)
+class SanctionOrAppreciationTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    search_fields = ('name',)
+    list_filter = ('id', 'name')
+    ordering = ('id',)
+    list_per_page = per_page
+
+
 
 @admin.register(UserRole)
 class UserRoleAdmin(admin.ModelAdmin):
@@ -76,47 +101,47 @@ class SchoolAdmin(admin.ModelAdmin):
     list_per_page = per_page
 
 
-@admin.register(StaffProfile)
-class AdminAdmin(admin.ModelAdmin):
-    list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
-    search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    ordering = ('user__id',)
-    fieldsets = (
-        ('Utilisateur', {'fields': ('user',)}),
-        ('Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
-        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
-    )
-    list_per_page = per_page
-    readonly_fields=('created_at', 'updated_at')
+# @admin.register(StaffProfile)
+# class AdminAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+#     search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+#     list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+#     ordering = ('user__id',)
+#     fieldsets = (
+#         ('Utilisateur', {'fields': ('user',)}),
+#         ('Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+#         ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+#     )
+#     list_per_page = per_page
+#     readonly_fields=('created_at', 'updated_at')
 
 
-@admin.register(ParentOfStudent)
-class ParentOfStudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
-    search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    ordering = ('user__id',)
-    fieldsets = (
-        ('Utilisateur', {'fields': ('user',)}),
-        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
-        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
-    )
-    list_per_page = per_page
-    readonly_fields=('created_at', 'updated_at')
+# @admin.register(ParentOfStudent)
+# class ParentOfStudentAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+#     search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+#     list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+#     ordering = ('user__id',)
+#     fieldsets = (
+#         ('Utilisateur', {'fields': ('user',)}),
+#         ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+#         ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+#     )
+#     list_per_page = per_page
+#     readonly_fields=('created_at', 'updated_at')
 
 
 
-@admin.register(Pupil)
-class PupilAdmin(admin.ModelAdmin):
-    list_display = ('id', 'matricule','user', 'display_parents', 'lastname', 'firstname', 'gender', 'phone', 'address',)
-    search_fields = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'phone', 'address')
-    list_filter = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-    ordering = ('user__id',)
-    fieldsets = (
-        ('Utilisateur', {'fields': ('matricule', 'user', 'parents')}),
-        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
-        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
-    )
-    list_per_page = per_page
-    readonly_fields=('created_at', 'updated_at')
+# @admin.register(Pupil)
+# class PupilAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'matricule','user', 'display_parents', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+#     search_fields = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'phone', 'address')
+#     list_filter = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+#     ordering = ('user__id',)
+#     fieldsets = (
+#         ('Utilisateur', {'fields': ('matricule', 'user', 'parents')}),
+#         ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+#         ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+#     )
+#     list_per_page = per_page
+#     readonly_fields=('created_at', 'updated_at')
