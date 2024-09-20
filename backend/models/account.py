@@ -34,7 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     is_admin = models.BooleanField(default=False)
     
-    # is_admin_school = models.BooleanField(default=False)
+    is_admin_school = models.BooleanField(default=False)
     
     # is_manager = models.BooleanField(default=False)
     
