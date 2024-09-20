@@ -1,5 +1,7 @@
 from django.db import models
 
+from backend.models.admin_manager.admin_manager import SchoolLevel
+
 cities = [
     ('Brazzaville', 'Brazzaville'),
     ('Pointe Noire', 'Pointe Noire')
@@ -79,3 +81,17 @@ class SchoolYear(models.Model):
         return current_school_year
 
 
+class Classroom(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    name = models.CharField(max_length=100, verbose_name="Nom de la salle")
+    school_level = models.ForeignKey(SchoolLevel, on_delete=models.CASCADE, verbose_name="Niveau scolaire")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
+    
+    def __str__(self):
+        return f"{self.name} - {self.school_level.name}"
+    
+    class Meta:
+        verbose_name = "Salle de classe"
+        verbose_name_plural = "Salles de classes"
