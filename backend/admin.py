@@ -1,7 +1,14 @@
 from django.contrib import admin
-from backend.models.account import User, UserRole
+from backend.models.account import StaffProfil, User, UserRole
 from backend.models.admin_manager.admin_manager import LevelScolaship, SchoolCycle,SchoolSeries
 from backend.models.school_manager.school_manager import School
+
+per_page = 20
+
+admin.site.site_header = "ELIMU - Application de gestion scolaire"
+admin.site.site_title = "ELIMU - Application de gestion scolaire"
+admin.site.index_title = "Bienvenue dans l'interface d'administration ELIMU"
+
 
 # Register your models here.
 # model from admin_manager module
@@ -11,6 +18,7 @@ class SchoolCycleAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('id', 'name',)
     ordering = ('id',)
+    list_per_page = per_page
     
 @admin.register(SchoolSeries)
 class SchoolSeriesAdmin(admin.ModelAdmin):
@@ -18,6 +26,7 @@ class SchoolSeriesAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('id', 'name',)
     ordering = ('id',)
+    list_per_page = per_page
 
 @admin.register(LevelScolaship)
 class LevelScolashipAdmin(admin.ModelAdmin):
@@ -25,6 +34,7 @@ class LevelScolashipAdmin(admin.ModelAdmin):
     search_fields = ('name', 'series__name', 'cycle__name')
     list_filter = ('id', 'cycle', 'series')
     ordering = ('id',)
+    list_per_page = per_page
 
 @admin.register(UserRole)
 class UserRoleAdmin(admin.ModelAdmin):
@@ -32,6 +42,7 @@ class UserRoleAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_filter = ('id', 'name')
     ordering = ('id',)
+    list_per_page = per_page
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -45,6 +56,7 @@ class UserAdmin(admin.ModelAdmin):
         ('Création et modification', {'fields': ('created_at', 'updated_at')}),
     )
     readonly_fields=('created_at', 'updated_at')
+    list_per_page = per_page
 
 
 @admin.register(School)
@@ -60,4 +72,18 @@ class SchoolAdmin(admin.ModelAdmin):
         ('Logo', {'fields': ('logo',)}),
         ('Description', {'fields': ('description',)}),
     )
+    list_per_page = per_page
+
+
+@admin.register(StaffProfil)
+class AdminAdmin(admin.ModelAdmin):
+    list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+    search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
     
+    ordering = ('user__id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('user',)}),
+        ('Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo', 'skype', 'gmail', 'discord')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
