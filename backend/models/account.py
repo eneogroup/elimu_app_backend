@@ -7,6 +7,10 @@ class UserRole(models.Model):
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Rôle"
+        verbose_name_plural = "Rôles"
 
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None,):
@@ -53,6 +57,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"Utilisateur : {self.username}"
+    
+    class Meta:
+        verbose_name = "Utilisateur"
+        verbose_name_plural = "Utilisateurs"
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -69,4 +77,5 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+    
 

@@ -7,6 +7,10 @@ class SchoolCycle(models.Model):
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Cycle scolaire"
+        verbose_name_plural = "Cycles scolaires"
 
 
 class SchoolSeries(models.Model):
@@ -14,6 +18,10 @@ class SchoolSeries(models.Model):
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Série"
+        verbose_name_plural = "Séries"
 
 
 class LevelScolaship(models.Model):
@@ -21,8 +29,12 @@ class LevelScolaship(models.Model):
     series = models.ForeignKey(SchoolSeries, on_delete=models.CASCADE, verbose_name="Série", blank=True, null=True)
     cycle = models.ForeignKey(SchoolCycle, on_delete=models.CASCADE, verbose_name="Cycle scolaire")
     
+    
     def __str__(self):
         return self.name
-
+    
+    class Meta:
+        verbose_name = "Niveau scolaire"
+        verbose_name_plural = "Niveaux scolaires"
     
     
