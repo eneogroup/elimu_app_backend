@@ -77,5 +77,5 @@ class SchoolYear(models.Model):
         from .school_manager import SchoolYear
         current_school_year = SchoolYear.objects.filter(school=self.school, is_current_year=True).first()
         return current_school_year
-    
-    
+
+

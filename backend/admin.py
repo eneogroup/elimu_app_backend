@@ -1,6 +1,6 @@
 from django.contrib import admin
 from backend.models.account import *
-from backend.models.admin_manager.admin_manager import LevelScolaship, SchoolCycle,SchoolSeries
+from backend.models.admin_manager.admin_manager import SchoolLevel, SchoolCycle,SchoolSeries
 from backend.models.school_manager.school_manager import *
 
 per_page = 20
@@ -29,7 +29,7 @@ class SchoolSeriesAdmin(admin.ModelAdmin):
     ordering = ('id',)
     list_per_page = per_page
 
-@admin.register(LevelScolaship)
+@admin.register(SchoolLevel)
 class LevelScolashipAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'series', 'cycle')
     search_fields = ('name', 'series__name', 'cycle__name')

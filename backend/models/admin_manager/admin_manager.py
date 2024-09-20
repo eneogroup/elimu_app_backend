@@ -24,7 +24,7 @@ class SchoolSeries(models.Model):
         verbose_name_plural = "Séries"
 
 
-class LevelScolaship(models.Model):
+class SchoolLevel(models.Model):
     name = models.CharField(max_length=25, verbose_name="Nom du niveau")
     series = models.ForeignKey(SchoolSeries, on_delete=models.CASCADE, verbose_name="Série", blank=True, null=True)
     cycle = models.ForeignKey(SchoolCycle, on_delete=models.CASCADE, verbose_name="Cycle scolaire")
