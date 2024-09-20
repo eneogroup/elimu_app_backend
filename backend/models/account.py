@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 
+class UserRole(models.Model):
+    name = models.CharField(max_length=50, unique=True, verbose_name="Nom du rôle")
+    permissions = models.ManyToManyField('auth.Permission', related_name='role_permissions')
+    
+    def __str__(self):
+        return self.name
 
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None,):
@@ -26,25 +32,15 @@ class UserManager(BaseUserManager):
 #  Custom User Model
 class User(AbstractBaseUser, PermissionsMixin):
     
-
-    
     username = models.CharField(max_length=255, unique=True,)
+    
+    email = models.EmailField(max_length=255, unique=True, blank=True, null=True)
+    
+    role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, verbose_name="Rôle", blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
     
     is_admin = models.BooleanField(default=False)
-    
-    is_admin_school = models.BooleanField(default=False)
-    
-    # is_manager = models.BooleanField(default=False)
-    
-    # is_accountant = models.BooleanField(default=False)
-    
-    # is_student = models.BooleanField(default=False)
-    
-    # is_teacher = models.BooleanField(default=False)
-    
-    # is_parent = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True)
     
