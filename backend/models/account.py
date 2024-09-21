@@ -138,5 +138,32 @@ class Pupil(CommonProfile):
     display_parents.short_description = 'Parents'
 
 
+class TeacherSchool(CommonProfile):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
+    school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", related_name='teacher_school')
+    is_principal = models.BooleanField(verbose_name="Est principal", default=False)
+    is_assistant = models.BooleanField(verbose_name="Est assistant", default=False)
+
+    class Meta:
+        verbose_name = "Professeur de l'école"
+        verbose_name_plural = "Professeurs de l'école"
+    
+    def __str__(self):
+        return f"Professeur de l'école : {self.user.username}"
+    
+    # def display_subjects(self):
+    #     return ", ".join(str(subject) for subject in self.subjects.all())
+    
+    def clean(self):
+        # if self.subjects.count() < 1:
+        #     raise ValidationError('Un professeur doit avoir au moins un matière.')
+        if self.school_code is None:
+            raise ValidationError('Un professeur doit appartenir à une école.')
+        if self.school_code.is_closed:
+            raise ValidationError('L\'école est fermée.')
+        
+    
+
+
 
     
