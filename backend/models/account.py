@@ -161,9 +161,5 @@ class TeacherSchool(CommonProfile):
             raise ValidationError('Un professeur doit appartenir à une école.')
         if self.school_code.is_closed:
             raise ValidationError('L\'école est fermée.')
-        
-    
 
 
-
-    
