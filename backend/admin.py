@@ -132,32 +132,49 @@ class SchoolAdmin(admin.ModelAdmin):
 #     readonly_fields=('created_at', 'updated_at')
 
 
-# @admin.register(ParentOfStudent)
-# class ParentOfStudentAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
-#     search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-#     list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-#     ordering = ('user__id',)
-#     fieldsets = (
-#         ('Utilisateur', {'fields': ('user',)}),
-#         ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
-#         ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
-#     )
-#     list_per_page = per_page
-#     readonly_fields=('created_at', 'updated_at')
+@admin.register(ParentOfStudent)
+class ParentOfStudentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+    search_fields = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    list_filter = ('user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    ordering = ('user__id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('user',)}),
+        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
 
 
 
-# @admin.register(Pupil)
-# class PupilAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'matricule','user', 'display_parents', 'lastname', 'firstname', 'gender', 'phone', 'address',)
-#     search_fields = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'phone', 'address')
-#     list_filter = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
-#     ordering = ('user__id',)
-#     fieldsets = (
-#         ('Utilisateur', {'fields': ('matricule', 'user', 'parents')}),
-#         ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
-#         ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
-#     )
-#     list_per_page = per_page
-#     readonly_fields=('created_at', 'updated_at')
+@admin.register(Pupil)
+class PupilAdmin(admin.ModelAdmin):
+    list_display = ('id', 'matricule','user', 'display_parents', 'lastname', 'firstname', 'gender', 'phone', 'address',)
+    search_fields = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'phone', 'address')
+    list_filter = ('id', 'matricule', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    ordering = ('user__id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('matricule', 'user', 'parents')}),
+        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo',)}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
+
+
+@admin.register(TeacherSchool)
+class TeacherSchoolAdmin(admin.ModelAdmin):
+    list_display = ('id', 'school_code','user', 'lastname', 'firstname', 'gender', 'phone')
+    search_fields = ('id', 'school_code__name', 'user__username', 'lastname', 'firstname', 'phone', 'address')
+    list_filter = ('id', 'school_code__name', 'user__username', 'lastname', 'firstname', 'gender', 'phone', 'address')
+    ordering = ('id',)
+    fieldsets = (
+        ('Utilisateur', {'fields': ('school_code', 'user',)}),
+        ('Information Personnel', {'fields': ('lastname', 'firstname', 'gender', 'nationality', 'birthplace', 'phone', 'address', 'date_of_birth', 'photo', 'is_principal', 'is_assistant')}),
+        ('Réseaux sociaux', {'fields': ('skype', 'gmail', 'discord', 'facebook', 'linkedin','instagram', 'twitter', 'whatsapp')}),
+    )
+    list_per_page = per_page
+    readonly_fields=('created_at', 'updated_at')
+    
+
