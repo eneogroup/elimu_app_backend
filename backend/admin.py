@@ -81,8 +81,24 @@ class UserAdmin(admin.ModelAdmin):
         ('Profil', {'fields': ('role', 'is_admin', 'is_active')}),
         ('Création et modification', {'fields': ('created_at', 'updated_at')}),
     )
+    add_fieldsets = (
+        (None, {'fields': ('username', 'email', 'password1', 'password2', 'role', 'school_code')}),
+    )
+
+
     readonly_fields=('created_at', 'updated_at')
     list_per_page = per_page
+    
+    def save_model(self, request, obj, form, change):
+        if not change:
+            # This is a new user; hash the password
+            obj.set_password(form.cleaned_data['password'])
+        else:
+            # For existing users, ensure to only hash if password was changed
+            if form.cleaned_data['password']:
+                obj.set_password(form.cleaned_data['password'])
+        
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(School)
