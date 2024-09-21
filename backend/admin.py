@@ -72,12 +72,12 @@ class UserRoleAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'role', 'is_admin', 'is_active', 'created_at')
-    search_fields = ('username', 'email', 'role__name')
-    list_filter = ('id', 'username', 'email', 'role', 'is_admin', 'is_active', 'created_at',)
+    list_display = ('id', 'username', 'school_code', 'email', 'role', 'is_admin', 'is_active', 'created_at')
+    search_fields = ('username', 'school_code', 'email', 'role__name')
+    list_filter = ('id', 'username', 'school_code', 'email', 'role', 'is_admin', 'is_active', 'created_at',)
     ordering = ('id',)
     fieldsets = (
-        ('Identifiants', {'fields': ('username', 'email', 'password')}),
+        ('Identifiants', {'fields': ('username', 'email', 'school_code', 'password')}),
         ('Profil', {'fields': ('role', 'is_admin', 'is_active')}),
         ('Création et modification', {'fields': ('created_at', 'updated_at')}),
     )
