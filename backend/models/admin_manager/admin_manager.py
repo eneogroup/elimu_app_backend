@@ -1,4 +1,3 @@
-from typing import Any
 from django.db import models
 
 class SchoolCycle(models.Model):
@@ -72,3 +71,24 @@ class SanctionOrAppreciationType(models.Model):
     class Meta:
         verbose_name = "Type de sanction ou d'appréciation"
         verbose_name_plural = "Types de sanctions ou d'appréciations"
+#         ordering = ['name']
+
+
+# class SanctionOrAppreciation(models.Model):
+#     id = models.AutoField(primary_key=True, auto_created=True)
+#     student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, verbose_name="Étudiant")
+#     subject = models.ForeignKey('backend.Subject', on_delete=models.CASCADE, verbose_name="Matière")
+#     type = models.ForeignKey(SanctionOrAppreciationType, on_delete=models.CASCADE, verbose_name="Type de sanction ou d'appréciation")
+#     description = models.TextField(verbose_name="Description")
+#     date = models.DateField(verbose_name="Date")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+    
+#     def __str__(self):
+#         return f"{self.type} - {self.student}"
+    
+#     class Meta:
+#         verbose_name = "Sanction ou appréciation"
+#         verbose_name_plural = "Sanctions ou appréciations"
+#         ordering = ['-created_at']
+#         unique_together = ('student', 'type')
