@@ -9,8 +9,6 @@ admin.site.site_header = "ELIMU - Application de gestion scolaire"
 admin.site.site_title = "ELIMU - Application de gestion scolaire"
 admin.site.index_title = "Bienvenue dans l'interface d'administration ELIMU"
 
-admin.site.register(SchoolYear)
-admin.site.register(Classroom)
 # Register your models here.
 # model from admin_manager module
 @admin.register(SchoolCycle)
