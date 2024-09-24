@@ -55,10 +55,10 @@ class ParentsOfStudentsInSchoolView(APIView):
 
     def get(self, request, *args, **kwargs):
         # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school`
-        user_school = request.user.school
+        user_school = request.user.school_code
 
         # Récupérer toutes les inscriptions pour cette école
-        inscriptions = Inscription.objects.filter(classroom__school=user_school, is_active=True)
+        inscriptions = Inscription.objects.filter(classroom__school=user_school, is_active=True, school_year__is_current_year=True)
 
         # Extraire tous les élèves inscrits
         pupils = [inscription.student for inscription in inscriptions]
