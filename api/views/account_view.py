@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-from backend.models.account import TeacherSchool
-from api.serializers.account_serializer import TeacherSerializer
+from backend.models.account import ParentOfStudent, Pupil, TeacherSchool
+from api.serializers.account_serializer import ParentOfStudentSerializer, PupilSerializer, TeacherSerializer
 from rest_framework import status
 
 
@@ -34,3 +34,12 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
         if instance.school_code != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer cet enseignant."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+
+
+class ParentOfStudentViewSet(viewsets.ModelViewSet):
+    queryset = ParentOfStudent.objects.all()
+    serializer_class = ParentOfStudentSerializer
+
+class PupilViewSet(viewsets.ModelViewSet):
+    queryset = Pupil.objects.all()
+    serializer_class = PupilSerializer

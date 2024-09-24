@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import m2m_changed
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.forms import ValidationError
 from backend.models.school_manager.school_manager import School, UUID4Field
@@ -115,6 +116,7 @@ class ParentOfStudent(CommonProfile):
         return f"Parent : {self.lastname} {self.firstname}"
 
 
+
 class Pupil(CommonProfile):
     id = models.AutoField(primary_key=True)
     matricule = UUID4Field(auto_created=True, blank=True)
@@ -137,6 +139,13 @@ class Pupil(CommonProfile):
         return ", ".join(str(parent) for parent in self.parents.all())
     display_parents.short_description = 'Parents'
 
+# Signal to validate the number of parents
+def validate_parents(sender, **kwargs):
+    if kwargs['instance'].parents.count() < 1 or kwargs['instance'].parents.count() > 2:
+        raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
+
+# Connect the signal
+m2m_changed.connect(validate_parents, sender=Pupil.parents.through)
 
 class TeacherSchool(CommonProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
