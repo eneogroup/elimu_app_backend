@@ -1,8 +1,11 @@
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from backend.models.account import ParentOfStudent, Pupil, TeacherSchool
 from api.serializers.account_serializer import ParentOfStudentSerializer, PupilSerializer, TeacherSerializer
 from rest_framework import status
+
+from backend.models.school_manager.school_manager import Inscription
 
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
@@ -37,9 +40,33 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
 
 
 class ParentOfStudentViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = ParentOfStudent.objects.all()
     serializer_class = ParentOfStudentSerializer
 
 class PupilViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Pupil.objects.all()
     serializer_class = PupilSerializer
+
+
+class ParentsOfStudentsInSchoolView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school`
+        user_school = request.user.school
+
+        # Récupérer toutes les inscriptions pour cette école
+        inscriptions = Inscription.objects.filter(classroom__school=user_school, is_active=True)
+
+        # Extraire tous les élèves inscrits
+        pupils = [inscription.student for inscription in inscriptions]
+
+        # Récupérer tous les parents des élèves inscrits
+        parents = ParentOfStudent.objects.filter(parents_of_pupils__in=pupils).distinct()
+
+        # Sérialiser les données des parents
+        serializer = ParentOfStudentSerializer(parents, many=True)
+
+        return Response(serializer.data)
