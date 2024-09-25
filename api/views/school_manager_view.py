@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from backend.models.school_manager.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
-from api.serializers.school_manager.school_manager_serializer import InscriptionSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
+from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 
 
 class SchoolYearViewSet(viewsets.ModelViewSet):

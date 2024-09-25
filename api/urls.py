@@ -3,10 +3,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views.account_view import ParentOfStudentViewSet, PupilViewSet, TeacherSchoolViewSet
 from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
-from api.views.communication_manager.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, TagViewSet
-from api.views.school_manager.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
-from .views.admin_manager.admin_manager_views import *
-from .views.school_manager.school_manager_view import (
+from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, TagViewSet
+from api.views.library_view import EbookViewSet
+from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
+from .views.admin_manager_views import *
+from .views.school_manager_view import (
     InscriptionViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
@@ -42,6 +43,9 @@ router.register(r'tags', TagViewSet, basename='tags')
 router.register(r'informations', InformationViewSet, basename='informations')
 router.register(r'evenements', EventViewSet, basename='events')
 router.register(r'annonces', AnnouncementViewSet, basename='announcements')
+
+# URL FOR LIBRARY MANAGER
+router.register(r'ebooks', EbookViewSet, basename='ebooks')
 
 
 urlpatterns = [

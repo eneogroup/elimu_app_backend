@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets, permissions
 
-from api.serializers.communication_manager.communication_serializer import AnnouncementSerializer, EventSerializer, InformationSerializer, TagSerializer
+from api.serializers.communication_serializer import AnnouncementSerializer, EventSerializer, InformationSerializer, TagSerializer
 from backend.models.communication_manager.communication_manager import Announcement, Event, Information, Tag
 
 class TagViewSet(viewsets.ModelViewSet):
