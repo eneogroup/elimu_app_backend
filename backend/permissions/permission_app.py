@@ -1,13 +1,13 @@
 from rest_framework.permissions import BasePermission
 
-class IsComptable(BasePermission):
+class IsDirector(BasePermission):
     """
     Permission pour les utilisateurs ayant le rôle de Directeur.
     """
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role.name == 'Directeur'
 
-class IsGestionnaire(BasePermission):
+class IsManager(BasePermission):
     """
     Permission pour les utilisateurs ayant le rôle de gestionnaire.
     """
@@ -15,7 +15,7 @@ class IsGestionnaire(BasePermission):
         return request.user.is_authenticated and request.user.role.name == 'Gestionnaire'
 
 
-class IsComptable(BasePermission):
+class IsAccountant(BasePermission):
     """
     Permission pour les utilisateurs ayant le rôle de comptable.
     """
