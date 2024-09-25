@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.school_manager.subject_manager import Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram
+from backend.models.subject_manager import Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:

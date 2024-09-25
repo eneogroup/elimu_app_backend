@@ -1,6 +1,6 @@
 from django.db import models
 from django.forms import ValidationError
-from backend.models.admin_manager.admin_manager import SchoolLevel
+from backend.models.admin_manager import SchoolLevel
 
 cities = [
     ('Brazzaville', 'Brazzaville'),

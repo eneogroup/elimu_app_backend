@@ -7,7 +7,7 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, Ou
 from django.contrib.auth import authenticate, login, logout
 
 from backend.models.account import User
-from backend.models.school_manager.school_manager import School
+from backend.models.school_manager import School
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)

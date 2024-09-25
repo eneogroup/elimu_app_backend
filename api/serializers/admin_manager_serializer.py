@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.admin_manager.admin_manager import SchoolCycle, SchoolSeries, SchoolLevel, SubjectGroup, DocumentType, SanctionOrAppreciationType
+from backend.models.admin_manager import SchoolCycle, SchoolSeries, SchoolLevel, SubjectGroup, DocumentType, SanctionOrAppreciationType
 
 class SchoolCycleSerializer(serializers.ModelSerializer):
     class Meta:

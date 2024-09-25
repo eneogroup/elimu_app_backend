@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from api.serializers.subject_manager_serializer import SchoolCalendarSerializer, SchoolHolidaySerializer, SchoolProgramSerializer, SchoolScheduleSerializer, SubjectSerializer
-from backend.models.school_manager.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolSchedule, Subject
+from backend.models.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolSchedule, Subject
 
 
 class SubjectViewSet(viewsets.ModelViewSet):

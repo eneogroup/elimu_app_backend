@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework import viewsets, permissions
 
 from api.serializers.library_serializer import EbookSerializer
-from backend.models.library_manager.library_manager import Ebook
+from backend.models.library_manager import Ebook
 
 class EbookViewSet(viewsets.ModelViewSet):
     queryset = Ebook.objects.all()

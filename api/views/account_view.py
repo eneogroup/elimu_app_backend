@@ -5,7 +5,7 @@ from backend.models.account import ParentOfStudent, Pupil, TeacherSchool
 from api.serializers.account_serializer import ParentOfStudentSerializer, PupilSerializer, TeacherSerializer
 from rest_framework import status
 
-from backend.models.school_manager.school_manager import Inscription
+from backend.models.school_manager import Inscription
 
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):

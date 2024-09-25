@@ -2,8 +2,8 @@ from datetime import date
 from django.db import models
 from django.forms import ValidationError
 from backend.models.account import TeacherSchool
-from backend.models.admin_manager.admin_manager import SubjectGroup
-from backend.models.school_manager.school_manager import Classroom, School
+from backend.models.admin_manager import SubjectGroup
+from backend.models.school_manager import Classroom, School
 
 
 class Subject(models.Model):

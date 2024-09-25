@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.signals import m2m_changed
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.forms import ValidationError
-from backend.models.school_manager.school_manager import School, UUID4Field
+from backend.models.school_manager import School, UUID4Field
 
 genders = [
     ('Masculin', 'Masculin'),

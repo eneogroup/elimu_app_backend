@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.school_manager.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
+from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):

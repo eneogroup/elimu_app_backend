@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions
-from backend.models.admin_manager.admin_manager import SchoolCycle, SchoolSeries, SchoolLevel, SubjectGroup, DocumentType, SanctionOrAppreciationType
+from backend.models.admin_manager import SchoolCycle, SchoolSeries, SchoolLevel, SubjectGroup, DocumentType, SanctionOrAppreciationType
 from api.serializers.admin_manager_serializer import (
     SchoolCycleSerializer, SchoolSeriesSerializer,
     SchoolLevelSerializer, SubjectGroupSerializer,

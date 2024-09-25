@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework import viewsets, permissions
 
 from api.serializers.communication_serializer import AnnouncementSerializer, EventSerializer, InformationSerializer, TagSerializer
-from backend.models.communication_manager.communication_manager import Announcement, Event, Information, Tag
+from backend.models.communication_manager import Announcement, Event, Information, Tag
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
