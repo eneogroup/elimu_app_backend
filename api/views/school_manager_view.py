@@ -15,6 +15,18 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Associer l'année scolaire à l'école de l'utilisateur connecté
         serializer.save(school=self.request.user.school_code)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!=request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas modifier cette année scolaire."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!=request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas supprimer cette année scolaire."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
@@ -28,6 +40,18 @@ class ClassroomViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Associer la salle de classe à l'école de l'utilisateur connecté
         serializer.save(school=self.request.user.school_code)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!=request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas modifier cette salle de classe."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!=request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas supprimer cette salle de classe."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 class InscriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]

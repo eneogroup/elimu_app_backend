@@ -109,7 +109,6 @@ class ParentOfStudentViewSet(viewsets.ModelViewSet):
 
 class PupilViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Pupil.objects.all()
     serializer_class = PupilSerializer
 
 
