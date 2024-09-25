@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from api.views.account_view import ParentOfStudentViewSet, PupilViewSet, TeacherSchoolViewSet, UserViewSet
+from api.views.account_view import ParentOfStudentViewSet, TeacherSchoolViewSet, UserViewSet
 from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, TagViewSet
@@ -16,7 +16,6 @@ router = DefaultRouter()
 # URL FOR ACCOUNT
 router.register(r'teachers-school', TeacherSchoolViewSet, basename='teachers-school')
 router.register(r'parents', ParentOfStudentViewSet, basename='parents')
-router.register(r'pupils', PupilViewSet, basename='pupils')
 router.register(r'users', UserViewSet, basename='users')
 
 # URL FOR SCHOOL MANAGER
