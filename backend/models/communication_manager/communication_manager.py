@@ -24,7 +24,7 @@ class Tag(models.Model):
         verbose_name_plural = 'Tags'
     
 
-class Infomation(models.Model):
+class Information(models.Model):
     name = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to='information_images', blank=True)

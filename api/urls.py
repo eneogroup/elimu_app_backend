@@ -3,6 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views.account_view import ParentOfStudentViewSet, PupilViewSet, TeacherSchoolViewSet
 from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
+from api.views.communication_manager.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, TagViewSet
 from api.views.school_manager.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
 from .views.admin_manager.admin_manager_views import *
 from .views.school_manager.school_manager_view import (
@@ -35,6 +36,12 @@ router.register(r'school-levels', SchoolLevelViewSet, basename='schoollevel')
 router.register(r'subject-groups', SubjectGroupViewSet, basename='subjectgroup')
 router.register(r'document-types', DocumentTypeViewSet, basename='documenttype')
 router.register(r'sanction-appreciation-types', SanctionOrAppreciationTypeViewSet, basename='sanctionappreciationtype')
+
+# URL FORM COMMUNICATION MANAGER
+router.register(r'tags', TagViewSet, basename='tags')
+router.register(r'informations', InformationViewSet, basename='informations')
+router.register(r'evenements', EventViewSet, basename='events')
+router.register(r'annonces', AnnouncementViewSet, basename='announcements')
 
 
 urlpatterns = [
