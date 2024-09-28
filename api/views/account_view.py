@@ -140,8 +140,41 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
 
 class ParentOfStudentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = ParentOfStudent.objects.all()
     serializer_class = ParentOfStudentSerializer
+    
+    def get_queryset(self):
+        # Filtrer les parents par l'école de l'utilisateur connecté
+        return ParentOfStudent.objects.filter(school=self.request.user.school_code)
+    
+    def perform_create(self, serializer):
+        # Associer le parent à l'école de l'utilisateur connecté
+        serializer.save(school=self.request.user.school_code)
+    
+    def create(self, request, *args, **kwargs):
+        # Personnaliser la création pour inclure l'école de l'utilisateur
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        # S'assurer que l'utilisateur ne modifie pas l'école d'un parent
+        instance = self.get_object()
+        if instance.school!= request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas modifier ce parent."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        # S'assurer que l'utilisateur ne supprime pas un parent d'une autre école
+        instance = self.get_object()
+        if instance.school!= request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas supprimer ce parent."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+    
+    def retrieve(self, request, *args, **kwargs):
+        # S'assurer que l'utilisateur ne peut récupérer les informations d'un parent d'une autre école
+        instance = self.get_object()
+        if instance.school!= request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas récupérer les informations de ce parent."}, status=status.HTTP_403_FORBIDDEN)
+        return super().retrieve(request, *args, **kwargs)
+
 
 
 class ParentsOfStudentsInSchoolView(APIView):
@@ -164,3 +197,9 @@ class ParentsOfStudentsInSchoolView(APIView):
         serializer = ParentOfStudentSerializer(parents, many=True)
 
         return Response(serializer.data)
+
+
+class PupilsViewset(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PupilSerializer
+    

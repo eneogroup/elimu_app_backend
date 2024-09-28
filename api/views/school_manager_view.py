@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
 from backend.models.account import ParentOfStudent, TeacherSchool
 from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
@@ -171,3 +171,28 @@ class StudentEvaluationViewSet(viewsets.ModelViewSet):
         if instance.inscription.classroom.school != request.user.teacherschool.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer cette évaluation."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+
+class ActiveSchoolYearStudentsView(views.APIView):
+    """
+    Vue API pour récupérer les élèves inscrits pendant l'année scolaire active de l'école de l'utilisateur connecté.
+    """
+    permission_classes = [permissions.IsAuthenticated]  # Exige que l'utilisateur soit authentifié
+
+    def get(self, request, *args, **kwargs):
+        # Récupérer le code de l'école de l'utilisateur connecté
+        school_code = request.user.school_code
+
+        # Récupérer l'année scolaire active de l'école
+        try:
+            active_school_year = SchoolYear.objects.get(is_active=True, school_code=school_code)
+        except SchoolYear.DoesNotExist:
+            return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Récupérer les inscriptions des élèves pour l'année scolaire active
+        inscriptions = Inscription.objects.filter(school_year=active_school_year, classroom__school_code=school_code)
+
+        # Sérialiser les données des inscriptions
+        serializer = InscriptionSerializer(inscriptions, many=True)
+
+        # Renvoyer les informations des élèves inscrits
+        return Response(serializer.data, status=status.HTTP_200_OK)

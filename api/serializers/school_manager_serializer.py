@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from api.serializers.account_serializer import PupilSerializer
 from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
 
 
@@ -14,6 +15,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class InscriptionSerializer(serializers.ModelSerializer):
+    student = PupilSerializer(read_only=True)
     class Meta:
         model = Inscription
         fields = '__all__'  # Incluez tous les champs ou spécifiez ceux que vous voulez exposer
