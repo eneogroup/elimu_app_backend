@@ -160,3 +160,145 @@ class SchoolProgram(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class SchoolReportCard(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    student = models.ForeignKey('account.Pupil', on_delete=models.CASCADE, verbose_name="Élève")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
+    grade = models.CharField(max_length=5, verbose_name="Grade")
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Bulletin de {self.student.first_name} {self.student.last_name} pour {self.subject.name} ({self.grade})"
+    
+    class Meta:
+        verbose_name = "Bulletin de notes"
+        verbose_name_plural = "Bulletins de notes"
+    
+    def clean(self):
+        # Vérification que le grade est un chiffre entre 0 et 20
+        if not 0 <= int(self.grade) <= 20:
+            raise ValidationError("Le grade doit être un chiffre entre 0 et 20.")
+        return super().clean()
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+    
+    @property
+    def average_grade(self):
+        # Calcul du grade moyen pour la matière
+        grades = SchoolReportCard.objects.filter(student=self.student, subject=self.subject)
+        return sum(int(grade.grade) for grade in grades) / len(grades) if grades else 0
+    
+    @property
+    def is_passing(self):
+        # Vérification si le grade moyen est supérieur ou égal à 10
+        return self.average_grade >= 10
+    
+    @property
+    def is_failing(self):
+        # Vérification si le grade moyen est inférieur à 10
+        return not self.is_passing
+    
+    @property
+    def is_excellent(self):
+        # Vérification si le grade moyen est égal à 20
+        return self.average_grade == 20
+    
+    @property
+    def is_average(self):
+        # Vérification si le grade moyen est compris entre 10 et 19
+        return 10 <= self.average_grade < 20
+    
+    @property
+    def is_below_average(self):
+        # Vérification si le grade moyen est inférieur à 10
+        return self.average_grade < 10
+    
+    @property
+    def grade_level(self):
+        # Calcul du niveau de grade
+        if self.average_grade >= 20:
+            return "A"
+        elif self.average_grade >= 17:
+            return "B"
+        elif self.average_grade >= 14:
+            return "C"
+        elif self.average_grade >= 11:
+            return "D"
+        else:
+            return "F"
+    
+    @property
+    def grade_description(self):
+        # Description du grade
+        if self.is_excellent:
+            return "Excellent"
+        elif self.is_average:
+            return "Moyen"
+        elif self.is_below_average:
+            return "Mauvais"
+        else:
+            return "Très mauvais"
+    
+    @property
+    def grade_range(self):
+        # Intervalle de grade
+        if self.is_excellent:
+            return "20"
+        elif self.is_average:
+            return "17-19"
+        elif self.is_below_average:
+            return "14-10"
+        else:
+            return "F"
+    
+    @property
+    def grade_color(self):
+        # Couleur du grade
+        if self.is_excellent:
+            return "green"
+        elif self.is_average:
+            return "yellow"
+        elif self.is_below_average:
+            return "red"
+        else:
+            return "black"
+    
+    @property
+    def grade_percentage(self):
+        # Pourcentage du grade
+        return (self.average_grade / 20) * 100
+    
+    @property
+    def grade_percentage_rounded(self):
+        # Pourcentage du grade arrondi
+        return round(self.grade_percentage)
+    
+    @property
+    def grade_percentage_color(self):
+        # Couleur du pourcentage du grade
+        if self.grade_percentage >= 90:
+            return "green"
+        elif self.grade_percentage >= 80:
+            return "yellow"
+        elif self.grade_percentage >= 70:
+            return "orange"
+        else:
+            return "red"
+    
+    @property
+    def grade_percentage_description(self):
+        # Description du pourcentage du grade
+        if self.grade_percentage >= 90:
+            return "Très bien"
+        elif self.grade_percentage >= 80:
+            return "Bien"
+        elif self.grade_percentage >= 70:
+            return "Passable"
+        else:
+            return "Insuffisant"
