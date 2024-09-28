@@ -1,12 +1,15 @@
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth import get_user_model
 from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User
 from api.serializers.account_serializer import ParentOfStudentSerializer, PupilSerializer, TeacherSerializer, UserSerializer
 from rest_framework import status
 
 from backend.models.school_manager import Inscription
 from backend.permissions.permission_app import IsManager, IsDirector
+
+User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -70,6 +73,16 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
+class CurrentUserViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        """
+        Retourne les informations de l'utilisateur connecté.
+        """
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
