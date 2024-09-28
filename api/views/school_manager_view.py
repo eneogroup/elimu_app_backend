@@ -29,6 +29,29 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
+class ActiveSchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SchoolYearSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Les utilisateurs doivent être authentifiés
+
+    def get_queryset(self):
+        """
+        Récupérer l'année scolaire active pour l'école de l'utilisateur connecté.
+        """
+        user = self.request.user
+        return SchoolYear.objects.filter(is_active=True, school=user.school_code)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Retourner les informations de l'année scolaire active de l'école de l'utilisateur connecté.
+        Si aucune n'est active, retourner une réponse vide.
+        """
+        queryset = self.get_queryset()
+        if not queryset.exists():
+            return Response({"detail": "Aucune année scolaire active trouvée pour cette école."}, status=404)
+        serializer = self.get_serializer(queryset.first())
+        return Response(serializer.data)
+
+
 class ClassroomViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ClassroomSerializer

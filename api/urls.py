@@ -8,7 +8,7 @@ from api.views.library_view import EbookViewSet
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    InscriptionViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearViewSet, InscriptionViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
@@ -20,6 +20,7 @@ router.register(r'users', UserViewSet, basename='users')
 
 # URL FOR SCHOOL MANAGER
 router.register(r'school-years', SchoolYearViewSet, basename='schoolyear')
+router.register(r'active-schoolyear', ActiveSchoolYearViewSet, basename='active-schoolyear')
 router.register(r'classrooms', ClassroomViewSet, basename='classroom')
 router.register(r'inscriptions', InscriptionViewSet, basename="inscriptions")
 router.register(r'student-evaluations', StudentEvaluationViewSet, basename="student-evaluations")
