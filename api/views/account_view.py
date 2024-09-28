@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User
-from api.serializers.account_serializer import ParentOfStudentSerializer, PupilSerializer, TeacherSerializer, UserSerializer
-from rest_framework import status
+from api.serializers.account_serializer import ParentOfStudentSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, PupilSerializer, TeacherSerializer, UserSerializer
+from rest_framework import status, views
 
 from backend.models.school_manager import Inscription
 from backend.permissions.permission_app import IsManager, IsDirector
@@ -83,6 +83,29 @@ class CurrentUserViewSet(viewsets.ViewSet):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+class PasswordResetView(views.APIView):
+    """
+    API pour réinitialiser le mot de passe via email.
+    """
+    def post(self, request, *args, **kwargs):
+        serializer = PasswordResetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(request=request)
+            return Response({"detail": "Un email de réinitialisation de mot de passe a été envoyé."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetConfirmView(views.APIView):
+    """
+    Vue API pour confirmer le nouveau mot de passe après la réinitialisation.
+    """
+    def post(self, request, *args, **kwargs):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Mot de passe changé avec succès."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
