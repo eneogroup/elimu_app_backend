@@ -24,9 +24,17 @@ class SchoolStatisticsView(APIView):
         # Nombre total des élèves inscrits dans l'année scolaire active
         total_pupils = Inscription.objects.filter(
             classroom__school=school_code,
+            is_active=True,
             school_year__is_active=True
         ).count()
+        
+        # Extraire tous les élèves inscrits
+        inscriptions = Inscription.objects.filter(classroom__school=school_code, is_active=True, school_year__is_current_year=True)
+        pupils = [inscription.student for inscription in inscriptions]
 
+        # Récupérer tous les parents des élèves inscrits
+        parents = ParentOfStudent.objects.filter(parents_of_pupils__in=pupils).distinct()
+        
         # Nombre total des parents des élèves inscrits dans l'année scolaire active
         # Ici on utilise les élèves inscrits pour récupérer leurs parents
         total_parents = ParentOfStudent.objects.filter(
@@ -38,7 +46,7 @@ class SchoolStatisticsView(APIView):
         return Response({
             "total_teachers": total_teachers,
             "total_pupils": total_pupils,
-            "total_parents": total_parents,
+            "total_parents": parents.count(),
         })
 
 
