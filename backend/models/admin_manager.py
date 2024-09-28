@@ -71,7 +71,7 @@ class SanctionOrAppreciationType(models.Model):
     class Meta:
         verbose_name = "Type de sanction ou d'appréciation"
         verbose_name_plural = "Types de sanctions ou d'appréciations"
-#         ordering = ['name']
+        ordering = ['name']
 
 
 # class SanctionOrAppreciation(models.Model):

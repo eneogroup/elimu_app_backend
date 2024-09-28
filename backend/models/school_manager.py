@@ -1,14 +1,14 @@
 from django.db import models
 from django.forms import ValidationError
 from backend.models.admin_manager import SchoolLevel
+import uuid
+import hashlib
 
 cities = [
     ('Brazzaville', 'Brazzaville'),
     ('Pointe Noire', 'Pointe Noire')
 ]
 
-import uuid
-import hashlib
 
 class UUID4Field(models.CharField):
     def __init__(self, *args, **kwargs):
@@ -29,6 +29,7 @@ class UUID4Field(models.CharField):
             value = self.generate_short_uuid()
             setattr(model_instance, self.attname, value)
         return value
+
 
 class School(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
@@ -52,6 +53,7 @@ class School(models.Model):
     class Meta:
         verbose_name = "École"
         verbose_name_plural = "Écoles"
+
 
 class SchoolYear(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
@@ -146,6 +148,7 @@ class Inscription(models.Model):
 
     def get_student_name(self):
         return f"{self.student.firstname} {self.student.lastname}"
+
 
 class StudentEvaluation(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)

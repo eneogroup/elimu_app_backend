@@ -4,11 +4,11 @@ from rest_framework import viewsets, permissions
 
 from api.serializers.library_serializer import EbookSerializer
 from backend.models.library_manager import Ebook
+from backend.permissions.permission_app import IsDirector, IsManager
 
 class EbookViewSet(viewsets.ModelViewSet):
-    queryset = Ebook.objects.all()
     serializer_class = EbookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     
     def get_queryset(self):
         # Filtrer les livres par l'école de l'utilisateur connecté

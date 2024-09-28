@@ -1,6 +1,8 @@
 import os
 from django.db import models
 from django.utils.text import slugify
+from django.core.files.storage import default_storage
+from django.utils.crypto import get_random_string
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
@@ -49,23 +51,38 @@ class Information(models.Model):
         return self.name[:50] + '...' if len(self.name) > 50 else self.name
     
     def save_image_to_storage(self):
-        self.image.storage.save(self.image.name, self.image)
-        self.image = os.path.join('information_images', self.image.name)
-        self.save()
-        self.image.storage.delete(self.image.name)
-        self.save_image_to_storage()  # Save again to generate a new filename if necessary
-    
-    def save_image(self, filename):
-        ext = filename.split('.')[-1]
-        new_filename = '{}.{}'.format(slugify(self.name), ext)
-        self.image.save(new_filename, self.image, save=False)
-        self.image = os.path.join('information_images', new_filename)
-        self.save_image_to_storage()
+        """
+        Sauvegarde l'image dans le stockage de fichiers et renomme avec un nouveau nom unique basé sur `self.name`.
+        """
+        if not self.image:
+            return  # Si aucune image n'est présente, on ne fait rien
+
+        # Extraire l'extension de l'image
+        ext = self.image.name.split('.')[-1]
+        new_filename = f"{slugify(self.name)}.{ext}"
+        new_filepath = os.path.join('information_images', new_filename)
+
+        # Si un fichier avec ce nom existe déjà, générer un nouveau nom
+        if default_storage.exists(new_filepath):
+            unique_suffix = get_random_string(length=8)  # Génère un suffixe unique
+            new_filename = f"{slugify(self.name)}_{unique_suffix}.{ext}"
+            new_filepath = os.path.join('information_images', new_filename)
+
+        # Sauvegarder l'image avec le nouveau nom
+        with default_storage.open(new_filepath, 'wb+') as destination:
+            for chunk in self.image.chunks():
+                destination.write(chunk)
+
+        # Mettre à jour l'image avec le nouveau chemin
+        self.image.name = new_filepath
+        self.save()  # Sauvegarder l'instance pour enregistrer le chemin modifié
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+        """
+        Override de la méthode save pour gérer la sauvegarde d'image.
+        """
+        super().save(*args, **kwargs)  # Appel de la méthode save parente
+        self.save_image_to_storage()  # Appeler la méthode qui gère la sauvegarde de l'image
         
     
     class Meta:
@@ -101,23 +118,38 @@ class Event(models.Model):
         return self.name[:50] + '...' if len(self.name) > 50 else self.name
     
     def save_image_to_storage(self):
-        self.image.storage.save(self.image.name, self.image)
-        self.image = os.path.join('event_images', self.image.name)
-        self.save()
-        self.image.storage.delete(self.image.name)
-        self.save_image_to_storage()  # Save again to generate a new filename if necessary
-    
-    def save_image(self, filename):
-        ext = filename.split('.')[-1]
-        new_filename = '{}.{}'.format(slugify(self.name), ext)
-        self.image.save(new_filename, self.image, save=False)
-        self.image = os.path.join('event_images', new_filename)
-        self.save_image_to_storage()
-    
+        """
+        Sauvegarde l'image dans le stockage de fichiers et renomme avec un nouveau nom unique basé sur `self.name`.
+        """
+        if not self.image:
+            return  # Si aucune image n'est présente, on ne fait rien
+
+        # Extraire l'extension de l'image
+        ext = self.image.name.split('.')[-1]
+        new_filename = f"{slugify(self.name)}.{ext}"
+        new_filepath = os.path.join('event_images', new_filename)
+
+        # Si un fichier avec ce nom existe déjà, générer un nouveau nom
+        if default_storage.exists(new_filepath):
+            unique_suffix = get_random_string(length=8)  # Génère un suffixe unique
+            new_filename = f"{slugify(self.name)}_{unique_suffix}.{ext}"
+            new_filepath = os.path.join('event_images', new_filename)
+
+        # Sauvegarder l'image avec le nouveau nom
+        with default_storage.open(new_filepath, 'wb+') as destination:
+            for chunk in self.image.chunks():
+                destination.write(chunk)
+
+        # Mettre à jour l'image avec le nouveau chemin
+        self.image.name = new_filepath
+        self.save()  # Sauvegarder l'instance pour enregistrer le chemin modifié
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+        """
+        Override de la méthode save pour gérer la sauvegarde d'image.
+        """
+        super().save(*args, **kwargs)  # Appel de la méthode save parente
+        self.save_image_to_storage()  # Appeler la méthode qui gère la sauvegarde de l'image
     
     class Meta:
         verbose_name = 'Événement'
@@ -148,28 +180,44 @@ class Announcement(models.Model):
         return self.title[:50] + '...' if len(self.title) > 50 else self.title
     
     def save_image_to_storage(self):
-        self.image.storage.save(self.image.name, self.image)
-        self.image = os.path.join('announcement_images', self.image.name)
-        self.save()
-        self.image.storage.delete(self.image.name)
-        self.save_image_to_storage()  # Save again to generate a new filename if necessary
-        
-    def save_image(self, filename):
-        ext = filename.split('.')[-1]
-        new_filename = '{}.{}'.format(slugify(self.title), ext)
-        self.image.save(new_filename, self.image, save=False)
-        self.image = os.path.join('announcement_images', new_filename)
-        self.save_image_to_storage()
-    
+        """
+        Sauvegarde l'image dans le stockage de fichiers et renomme avec un nouveau nom unique basé sur `self.name`.
+        """
+        if not self.image:
+            return  # Si aucune image n'est présente, on ne fait rien
+
+        # Extraire l'extension de l'image
+        ext = self.image.name.split('.')[-1]
+        new_filename = f"{slugify(self.name)}.{ext}"
+        new_filepath = os.path.join('announcement_images', new_filename)
+
+        # Si un fichier avec ce nom existe déjà, générer un nouveau nom
+        if default_storage.exists(new_filepath):
+            unique_suffix = get_random_string(length=8)  # Génère un suffixe unique
+            new_filename = f"{slugify(self.name)}_{unique_suffix}.{ext}"
+            new_filepath = os.path.join('announcement_images', new_filename)
+
+        # Sauvegarder l'image avec le nouveau nom
+        with default_storage.open(new_filepath, 'wb+') as destination:
+            for chunk in self.image.chunks():
+                destination.write(chunk)
+
+        # Mettre à jour l'image avec le nouveau chemin
+        self.image.name = new_filepath
+        self.save()  # Sauvegarder l'instance pour enregistrer le chemin modifié
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+        """
+        Override de la méthode save pour gérer la sauvegarde d'image.
+        """
+        super().save(*args, **kwargs)  # Appel de la méthode save parente
+        self.save_image_to_storage()  # Appeler la méthode qui gère la sauvegarde de l'image
     
     class Meta:
         verbose_name = 'Annonce'
         verbose_name_plural = 'Annonces'
         ordering = ['-date_created']
+
 
 # class Question(models.Model):
 #     title = models.CharField(max_length=200)

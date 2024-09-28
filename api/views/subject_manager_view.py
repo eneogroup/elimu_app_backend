@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.serializers.subject_manager_serializer import SchoolCalendarSerializer, SchoolHolidaySerializer, SchoolProgramSerializer, SchoolScheduleSerializer, SubjectSerializer
 from backend.models.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolSchedule, Subject
+from backend.permissions.permission_app import IsDirector, IsManager
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = SubjectSerializer
 
     def get_queryset(self):

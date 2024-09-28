@@ -5,12 +5,14 @@ from backend.models.school_manager import Inscription, SchoolYear, Classroom, St
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from rest_framework.views import APIView
 
+from backend.permissions.permission_app import IsDirector, IsManager
+
 
 class SchoolStatisticsView(APIView):
     """
     Vue API qui renvoie le nombre total des enseignants, élèves inscrits et parents des élèves inscrits.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -44,7 +46,7 @@ class SchoolStatisticsView(APIView):
 
 
 class SchoolYearViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = SchoolYearSerializer
 
     def get_queryset(self):
@@ -92,7 +94,7 @@ class ActiveSchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = ClassroomSerializer
 
     def get_queryset(self):
@@ -151,7 +153,7 @@ class InscriptionViewSet(viewsets.ModelViewSet):
 
 
 class StudentEvaluationViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = StudentEvaluationSerializer
 
     def get_queryset(self):

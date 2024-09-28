@@ -1,10 +1,16 @@
 from rest_framework import serializers
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
-from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User
+from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User, UserRole
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+class UserRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRole
+        fields = '__all__'
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

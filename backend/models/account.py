@@ -147,6 +147,7 @@ def validate_parents(sender, **kwargs):
 # Connect the signal
 m2m_changed.connect(validate_parents, sender=Pupil.parents.through)
 
+
 class TeacherSchool(CommonProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
     school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", related_name='teacher_school')

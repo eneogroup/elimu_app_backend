@@ -14,7 +14,6 @@ class TagViewSet(viewsets.ModelViewSet):
     ordering = ['name']
 
 class InformationViewSet(viewsets.ModelViewSet):
-    queryset = Information.objects.all()
     serializer_class = InformationSerializer
     permission_classes = [permissions.IsAuthenticated]
     search_fields = ['name']
@@ -46,7 +45,6 @@ class InformationViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
     search_fields = ['name']

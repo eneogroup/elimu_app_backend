@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User
-from api.serializers.account_serializer import ParentOfStudentSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, PupilSerializer, TeacherSerializer, UserSerializer
+from api.serializers.account_serializer import ParentOfStudentSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, PupilSerializer, TeacherSerializer, UserRoleSerializer, UserSerializer
 from rest_framework import status, views
 
 from backend.models.school_manager import Inscription
@@ -11,9 +11,13 @@ from backend.permissions.permission_app import IsManager, IsDirector
 
 User = get_user_model()
 
+class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = UserRoleSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Les utilisateurs doivent être authentifiés
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
 
     def get_permissions(self):
         """
@@ -108,7 +112,7 @@ class PasswordResetConfirmView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = TeacherSerializer
 
     def get_queryset(self):
@@ -139,7 +143,7 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
 
 
 class ParentOfStudentViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
     serializer_class = ParentOfStudentSerializer
     
     def get_queryset(self):
@@ -178,7 +182,7 @@ class ParentOfStudentViewSet(viewsets.ModelViewSet):
 
 
 class ParentsOfStudentsInSchoolView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
 
     def get(self, request, *args, **kwargs):
         # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school`
