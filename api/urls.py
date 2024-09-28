@@ -8,7 +8,7 @@ from api.views.library_view import EbookViewSet
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    ActiveSchoolYearViewSet, InscriptionViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearViewSet, InscriptionViewSet, SchoolStatisticsView, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
@@ -52,6 +52,7 @@ router.register(r'ebooks', EbookViewSet, basename='ebooks')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('school-statistics/', SchoolStatisticsView.as_view(), name='school-statistics'),
     #URL FOR AUTHENTICATION
     path('login/', LoginAPIView.as_view(), name='login'),
     path('logout/', LogoutAPIView.as_view(), name='logout'),

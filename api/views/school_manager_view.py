@@ -1,7 +1,45 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
+from backend.models.account import ParentOfStudent, TeacherSchool
 from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
+from rest_framework.views import APIView
+
+
+class SchoolStatisticsView(APIView):
+    """
+    Vue API qui renvoie le nombre total des enseignants, élèves inscrits et parents des élèves inscrits.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        
+        # Filtrer par l'école de l'utilisateur connecté
+        school_code = user.school_code
+        
+        # Nombre total des enseignants dans l'école de l'utilisateur connecté
+        total_teachers = TeacherSchool.objects.filter(school_code=school_code).count()
+        
+        # Nombre total des élèves inscrits dans l'année scolaire active
+        total_pupils = Inscription.objects.filter(
+            classroom__school=school_code,
+            school_year__is_active=True
+        ).count()
+
+        # Nombre total des parents des élèves inscrits dans l'année scolaire active
+        # Ici on utilise les élèves inscrits pour récupérer leurs parents
+        total_parents = ParentOfStudent.objects.filter(
+            pupils__inscription__school_year__is_active=True,
+            pupils__inscription__classroom__school=school_code
+        ).distinct().count()
+
+        # Retourner les données dans la réponse
+        return Response({
+            "total_teachers": total_teachers,
+            "total_pupils": total_pupils,
+            "total_parents": total_parents,
+        })
 
 
 class SchoolYearViewSet(viewsets.ModelViewSet):
