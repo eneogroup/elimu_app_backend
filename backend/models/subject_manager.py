@@ -164,7 +164,7 @@ class SchoolProgram(models.Model):
 
 class SchoolReportCard(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    student = models.ForeignKey('account.Pupil', on_delete=models.CASCADE, verbose_name="Élève")
+    student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, verbose_name="Élève")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
     grade = models.CharField(max_length=5, verbose_name="Grade")
     school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
