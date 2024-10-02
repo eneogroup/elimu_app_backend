@@ -17,7 +17,7 @@ class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
 
     def get_permissions(self):
         """
@@ -112,7 +112,7 @@ class PasswordResetConfirmView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
     serializer_class = TeacherSerializer
 
     def get_queryset(self):
@@ -143,7 +143,7 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
 
 
 class ParentOfStudentViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
     serializer_class = ParentOfStudentSerializer
     
     def get_queryset(self):
@@ -182,7 +182,7 @@ class ParentOfStudentViewSet(viewsets.ModelViewSet):
 
 
 class ParentsOfStudentsInSchoolView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
 
     def get(self, request, *args, **kwargs):
         # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school`

@@ -8,7 +8,7 @@ from backend.permissions.permission_app import IsDirector, IsManager
 
 class EbookViewSet(viewsets.ModelViewSet):
     serializer_class = EbookSerializer
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
     
     def get_queryset(self):
         # Filtrer les livres par l'école de l'utilisateur connecté

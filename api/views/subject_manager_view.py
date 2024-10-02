@@ -7,7 +7,7 @@ from backend.permissions.permission_app import IsDirector, IsManager
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager(),IsDirector()]
+    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
     serializer_class = SubjectSerializer
 
     def get_queryset(self):
