@@ -25,16 +25,17 @@ class LoginAPIView(APIView):
         password = request.data['password']
         code = request.data['school_code']
         try:
-            school = School.objects.get(code=code)
+            school = School.objects.filter(code=code).first()
         except School.DoesNotExist:
             return Response({"errors:":"Aucun établissement ne corresponds à ce code"}, status=status.HTTP_404_NOT_FOUND)
         
         try:
-           User.objects.get(school_code=school, username=username)
+           User.objects.filter(school_code=school, username=username).filter()
         except User.DoesNotExist:
             return Response({"errors:":"ERREUR: Aucun utilisateur ne corresponds à cet établissement"}, status=status.HTTP_404_NOT_FOUND)
         
         user = authenticate(username=username, password=password)
+        print(user)
         
         if user is not None:
             login(request,user)

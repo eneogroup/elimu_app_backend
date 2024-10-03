@@ -63,9 +63,9 @@ def create_classroom(access_token, school_id, name, school_level_id):
 
 if __name__ == '__main__':
     # Remplacez par vos informations de connexion
-    school_code = '46aad1ff19564a0'
-    username = 'directeur_alcare'
-    password = 'test'
+    school_code = 'd8b5b69d0df1f6d'
+    username = 'directeur_petit_prince'
+    password = 'qwerty123'
 
     # Connexion
     print("Tentative de connexion...")
