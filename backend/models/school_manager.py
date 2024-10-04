@@ -188,3 +188,38 @@ class StudentEvaluation(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class SchoolAbsence(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    student = models.ForeignKey("backend.Pupil", on_delete=models.CASCADE, verbose_name="Élève")
+    inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, verbose_name="Inscription")
+    school_year = models.ForeignKey("backend.SchoolYear", on_delete=models.CASCADE, verbose_name="Année scolaire")
+    justified = models.BooleanField(default=False)
+    absence_date = models.DateField(verbose_name="Date de l'absence")
+    absence_type = models.CharField(max_length=100, verbose_name="Type d'absence")
+    remarks = models.TextField(verbose_name="Remarques", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
+    
+    class Meta:
+        verbose_name = "Absence d'élève"
+        verbose_name_plural = "Absences d'élèves"
+    
+    def __str__(self):
+        return f"Absence de {self.student.firstname} {self.student.lastname} - {self.absence_date}"
+    
+    def clean(self):
+        # Vérifie que l'inscription est active
+        if not self.inscription.is_active:
+            raise ValidationError("L'inscription doit être active pour enregistrer une absence.")
+        
+        # Vérifie que l'élève de l'inscription correspond à l'élève de l'absence
+        if self.inscription.student != self.student:
+            raise ValidationError("L'élève de l'absence doit correspondre à l'élève de l'inscription.")
+        
+        # Vérifie que l'année scolaire de l'inscription correspond à l'année scolaire de l'absence
+        if self.inscription.school_year != self.school_year:
+            raise ValidationError("L'année scolaire de l'inscription doit correspondre à l'année scolaire de l'absence.")
+        
+        return super().clean()

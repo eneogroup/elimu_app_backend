@@ -219,6 +219,41 @@ class Announcement(models.Model):
         ordering = ['-date_created']
 
 
+class Message(models.Model):
+    content = models.TextField(verbose_name='Contenu')
+    recipient = models.ForeignKey('backend.User', on_delete=models.CASCADE, related_name='received_messages')
+    sender = models.ForeignKey('backend.User', on_delete=models.CASCADE, related_name='sent_messages')
+    is_read = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'Message de {self.sender} à {self.recipient}'
+    
+    class Meta:
+        verbose_name = 'Message'
+        verbose_name_plural = 'Messages'
+        ordering = ['-date_created']
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
+    
+    def mark_as_unread(self):
+        self.is_read = False
+        self.save()
+    
+    def delete_message(self):
+        self.delete()
+    
+    def send_reply(self, content):
+        new_message = Message.objects.create(content=content, recipient=self.sender, sender=self.recipient)
+        return new_message
+    
+    def get_replies(self):
+        return Message.objects.filter(recipient=self.sender, sender=self.recipient).order_by('-date_created')
+    
+
+
 # class Question(models.Model):
 #     title = models.CharField(max_length=200)
 #     content = models.TextField()

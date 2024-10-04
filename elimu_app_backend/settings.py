@@ -200,3 +200,56 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST ='smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your_email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your_email_password'
+DEFAULT_FROM_EMAIL = 'your_email@gmail.com'
+EMAIL_SUBJECT_PREFIX = '[Eliminu App] '
+
+
+# # Jazzmin settings
+# JAZZMIN_SETTINGS = {
+#     "site_title": "Eliminu App",
+#     "site_header": "Eliminu App",
+#     "site_logo": "/static/img/logo.png",
+#     "menu_icon_classes": "material-icons",
+#     "show_sidebar_menu": True,
+#     "show_submenu_icons": True,
+#     "hide_sidebar_collapse_icon": False,
+#     "navigation_expanded": True,
+#     "collapse_sidebar_on_hover": False,
+#     "footer_text": "© 2023 Eliminu App. Tous droits réservés.",
+#     "header_background_color": "#37474f",
+#     "header_background_image": "",
+#     "header_background_image_opacity": 0.8,
+#     "header_background_image_size": "cover",
+#     "header_background_image_position":"",
+#     "header_dropdown_background_color": "#37474f",
+#     "body_background_color": "#f5f5f5",
+#     "form_background_color": "#ffffff",
+#     "form_border_color": "#e9e9e9",
+#     "form_border_radius": 3,
+#     "form_box_shadow": "0 1px 2px rgba(0, 0, 0, 0.05)",
+#     "form_field_background_color": "#ffffff",
+#     "form_field_border_color": "#cccccc",
+#     "form_field_border_radius": 3,
+#     "form_field_box_shadow": "0 1px 2px rgba(0, 0, 0, 0)",
+#     "form_field_error_color": "#b00020",
+#     "form_field_focus_background_color": "#e0e0e0",
+#     "form_field_focus_border_color": "#82b1ff",
+#     "form_button_background_color": "#4caf50",
+#     "form_button_border_color": "#4caf50",
+#     "form_button_text_color": "#ffffff",
+#     "form_button_border_radius": 3,
+#     "form_button_box_shadow": "0 1px 2px rgba(0, 0, 0, 0.05)",
+#     "form_button_focus_background_color": "#45a049",
+#     "form_button_focus_border_color": "#398439",
+
+# }
