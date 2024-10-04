@@ -1,1 +1,0 @@
-web: gunicorn ton_projet.wsgi --log-file -
