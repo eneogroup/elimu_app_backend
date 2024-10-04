@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.subject_manager import Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram
+from backend.models.subject_manager import Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram, SubjectAttribution
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,3 +47,9 @@ class SchoolProgramSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La matière doit appartenir à la même école que le programme.")
         
         return super().validate(attrs)
+
+
+class SubjectAttributionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubjectAttribution
+        fields = '__all__'

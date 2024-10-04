@@ -5,7 +5,7 @@ from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, TagViewSet
 from api.views.library_view import EbookViewSet
-from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet
+from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
     ActiveSchoolYearStudentsView, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolStatisticsView, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
@@ -31,6 +31,7 @@ router.register(r'school-calendars', SchoolCalendarViewSet, basename='schoolcale
 router.register(r'school-holidays', SchoolHolidayViewSet, basename='schoolholiday')
 router.register(r'school-programs', SchoolProgramViewSet, basename='schoolprogram')
 router.register(r'school-schedules', SchoolScheduleViewSet, basename='schoolschedule')
+router.register(r'subject-attributions', SubjectAttributionViewSet, basename='subject-attribution')
 
 # URL FOR ADMIN MANAGER
 router.register(r'school-cycles', SchoolCycleViewSet, basename='schoolcycle')
