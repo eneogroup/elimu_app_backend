@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.subject_manager import Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram, SubjectAttribution
+from backend.models.subject_manager import SchoolReportCard, Subject, SchoolSchedule, SchoolCalendar, SchoolHoliday, SchoolProgram, SubjectAttribution
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,4 +52,10 @@ class SchoolProgramSerializer(serializers.ModelSerializer):
 class SubjectAttributionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubjectAttribution
+        fields = '__all__'
+
+
+class SchoolReportCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolReportCard
         fields = '__all__'

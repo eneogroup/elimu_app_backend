@@ -2,9 +2,11 @@ from django.forms import ValidationError
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
-from api.serializers.subject_manager_serializer import SchoolCalendarSerializer, SchoolHolidaySerializer, SchoolProgramSerializer, SchoolScheduleSerializer, SubjectAttributionSerializer, SubjectSerializer
-from backend.models.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolSchedule, Subject, SubjectAttribution
+from api.serializers.subject_manager_serializer import SchoolCalendarSerializer, SchoolHolidaySerializer, SchoolProgramSerializer, SchoolReportCardSerializer, SchoolScheduleSerializer, SubjectAttributionSerializer, SubjectSerializer
+from backend.models.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolReportCard, SchoolSchedule, Subject, SubjectAttribution
 from backend.permissions.permission_app import IsDirector, IsManager
+from rest_framework.decorators import action
+
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
@@ -202,3 +204,85 @@ class SubjectAttributionViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+
+
+class SchoolReportCardViewSet(viewsets.ModelViewSet):
+    queryset = SchoolReportCard.objects.all()
+    serializer_class = SchoolReportCardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    
+    def get_queryset(self):
+        return SchoolReportCard.objects.filter(school=self.request.user.school_code)
+    
+    def perform_create(self, serializer):
+        serializer.save(school=self.request.user.school_code)
+    
+    def perform_update(self, serializer):
+        return serializer.save(school=self.request.user.school_code)
+    
+    def perform_destroy(self, instance):
+        instance.delete()
+    
+    # Endpoint pour obtenir les rapports par élève
+    @action(detail=False, methods=['get'], url_path='by-student/(?P<student_id>[^/.]+)')
+    def get_by_student(self, request, student_id=None):
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=request.user.school_code)
+        serializer = self.get_serializer(report_cards, many=True)
+        return Response(serializer.data)
+
+    # Endpoint pour obtenir les rapports par matière
+    @action(detail=False, methods=['get'], url_path='by-subject/(?P<subject_id>[^/.]+)')
+    def get_by_subject(self, request, subject_id=None):
+        report_cards = SchoolReportCard.objects.filter(subject__id=subject_id, school=request.user.school_code)
+        serializer = self.get_serializer(report_cards, many=True)
+        return Response(serializer.data)
+
+    # Endpoint pour calculer la moyenne pour un élève dans une matière
+    @action(detail=False, methods=['get'], url_path='average-by-student-subject/(?P<student_id>[^/.]+)/(?P<subject_id>[^/.]+)')
+    def get_average_by_student_subject(self, request, student_id=None, subject_id=None):
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=request.user.school_code)
+        if report_cards.exists():
+            average = sum(int(report_card.grade) for report_card in report_cards) / len(report_cards)
+            return Response({"average_grade": average})
+        return Response({"error": "No report cards found for the given student and subject."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Endpoint pour obtenir le statut de réussite/échec d'un élève dans une matière
+    @action(detail=False, methods=['get'], url_path='passing-status/(?P<student_id>[^/.]+)/(?P<subject_id>[^/.]+)')
+    def get_passing_status(self, request, student_id=None, subject_id=None):
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=request.user.school_code)
+        if report_cards.exists():
+            average_grade = sum(int(report_card.grade) for report_card in report_cards) / len(report_cards)
+            if average_grade >= 10:
+                return Response({"status": "Passing"})
+            else:
+                return Response({"status": "Failing"})
+        return Response({"error": "No report cards found for the given student and subject."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Endpoint pour obtenir un résumé du bulletin d'un élève
+    @action(detail=False, methods=['get'], url_path='summary/(?P<student_id>[^/.]+)')
+    def get_summary(self, request, student_id=None):
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=request.user.school_code)
+        if report_cards.exists():
+            summary = {
+                "total_subjects": report_cards.count(),
+                "average_grade": sum(int(report_card.grade) for report_card in report_cards) / len(report_cards),
+                "grades": [
+                    {
+                        "subject": report_card.subject.name,
+                        "grade": report_card.grade,
+                        "is_passing": int(report_card.grade) >= 10
+                    }
+                    for report_card in report_cards
+                ]
+            }
+            return Response(summary)
+        return Response({"error": "No report cards found for the given student."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Endpoint pour filtrer les bulletins par école
+    @action(detail=False, methods=['get'], url_path='by-school/(?P<school_id>[^/.]+)')
+    def get_by_school(self, request, school_id=None):
+        report_cards = SchoolReportCard.objects.filter(school__id=school_id)
+        serializer = self.get_serializer(report_cards, many=True)
+        return Response(serializer.data)
+
