@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
 from backend.models.account import ParentOfStudent, TeacherSchool
-from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
-from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
+from backend.models.school_manager import Inscription, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from rest_framework.views import APIView
 
 from backend.permissions.permission_app import IsDirector, IsManager
@@ -198,3 +198,36 @@ class ActiveSchoolYearStudentsView(views.APIView):
 
         # Renvoyer les informations des élèves inscrits
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class SchoolAbsenceViewSet(viewsets.ModelViewSet):
+    serializer_class = SchoolAbsenceSerializer
+    permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
+    
+    def get_queryset(self):
+        return SchoolAbsence.objects.filter(classroom__school=self.request.user.school_code)
+
+
+    def create(self, request, *args, **kwargs):
+        """Personnalise la création pour gérer des validations supplémentaires ou des logiques complexes"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def update(self, request, *args, **kwargs):
+        """Personnalise la mise à jour d'une absence"""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """Personnalise la suppression d'une absence"""
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

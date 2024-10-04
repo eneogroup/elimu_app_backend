@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from api.serializers.account_serializer import PupilSerializer
-from backend.models.school_manager import Inscription, SchoolYear, Classroom, StudentEvaluation
+from backend.models.school_manager import Inscription, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):
@@ -64,3 +64,10 @@ class StudentEvaluationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("L'année scolaire de l'inscription doit correspondre à l'année scolaire de l'évaluation.")
 
         return super().validate(attrs)
+
+
+class SchoolAbsenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolAbsence
+        fields = '__all__'
+

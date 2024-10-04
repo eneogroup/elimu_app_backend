@@ -8,7 +8,7 @@ from api.views.library_view import EbookViewSet
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    ActiveSchoolYearStudentsView, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolStatisticsView, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearStudentsView, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsView, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
@@ -25,6 +25,7 @@ router.register(r'active-schoolyear', ActiveSchoolYearViewSet, basename='active-
 router.register(r'classrooms', ClassroomViewSet, basename='classroom')
 router.register(r'inscriptions', InscriptionViewSet, basename="inscriptions")
 router.register(r'student-evaluations', StudentEvaluationViewSet, basename="student-evaluations")
+router.register(r'school-absences', SchoolAbsenceViewSet, basename='school-absence')
 
 #URL FOR SUBJECT MANAGER
 router.register(r'school-calendars', SchoolCalendarViewSet, basename='schoolcalendar')
