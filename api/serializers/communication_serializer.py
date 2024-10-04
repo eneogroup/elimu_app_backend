@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from backend.models import Information
-from backend.models.communication_manager import Announcement, Event, Tag
+from backend.models.communication_manager import Announcement, Event, Message, Tag
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +23,16 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = '__all__'
 
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'recipient', 'sender', 'is_read', 'date_created']
+
+class CreateMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['content', 'recipient']
+
+class ReplyMessageSerializer(serializers.Serializer):
+    content = serializers.CharField()
