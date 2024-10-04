@@ -163,6 +163,9 @@ class TeacherSchool(CommonProfile):
     
     def __str__(self):
         return f"Professeur de l'école : {self.user.username}"
+    
+    def full_name(self):
+        return f"{self.lastname} {self.firstname}"
 
     def clean(self):
         if self.school_code is None:

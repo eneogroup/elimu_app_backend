@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import ValidationError
 from backend.models.account import TeacherSchool
 from backend.models.admin_manager import SubjectGroup
-from backend.models.school_manager import Classroom, School
+from backend.models.school_manager import Classroom, School, SchoolYear
 
 
 class Subject(models.Model):
@@ -302,3 +302,46 @@ class SchoolReportCard(models.Model):
             return "Passable"
         else:
             return "Insuffisant"
+
+
+
+class SubjectAttribution(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    teacher = models.ForeignKey('backend.TeacherSchool', on_delete=models.CASCADE, verbose_name="Professeur")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
+    classroom = models.ForeignKey('backend.Classroom', on_delete=models.CASCADE, verbose_name="Salle de classe")
+    school_year = models.ForeignKey('backend.SchoolYear', on_delete=models.CASCADE, verbose_name="Année scolaire")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.subject.name} ({self.classroom.name})"
+
+
+    class Meta:
+        verbose_name = "Attribution de matière"
+        verbose_name_plural = "Attributions de matières"
+        ordering = ['subject']
+        unique_together = ('subject', 'classroom')
+    
+    def clean(self):
+        # Vérification que la matière appartient à la même école que la salle de classe
+        if self.subject.school != self.classroom.school:
+            raise ValidationError("La matière doit appartenir à la même école que la salle de classe.")
+        # Vérification que la matière n'est pas déjà attribuée à la salle de classe pour l'année scolaire en cours
+        if SubjectAttribution.objects.filter(classroom=self.classroom, school_year=self.school_year).exists():
+            raise ValidationError("La matière est déjà attribuée à la salle de classe pour l'année scolaire en cours.")
+        
+        if SubjectAttribution.objects.filter(teacher=self.teacher, subject=self.subject, classroom=self.classroom, school_year=self.school_year).exists():
+            raise ValidationError("Le professeur enseigne déjà cette matière dans cette salle de classe pour l'année en cours.")
+
+        return super().clean()
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+    
+    @property
+    def classroom_teacher(self):
+        # Professeur de la salle de classe
+        return self.teacher.full_name()
