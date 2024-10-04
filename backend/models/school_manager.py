@@ -193,7 +193,7 @@ class StudentEvaluation(models.Model):
 class SchoolAbsence(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     student = models.ForeignKey("backend.Pupil", on_delete=models.CASCADE, verbose_name="Élève")
-    inscription = models.ForeignKey(Inscription, on_delete=models.CASCADE, verbose_name="Inscription")
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name="Salle de classe", null=True, blank=True)
     school_year = models.ForeignKey("backend.SchoolYear", on_delete=models.CASCADE, verbose_name="Année scolaire")
     justified = models.BooleanField(default=False)
     absence_date = models.DateField(verbose_name="Date de l'absence")
