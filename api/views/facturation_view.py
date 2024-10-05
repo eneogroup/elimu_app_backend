@@ -33,7 +33,6 @@ class SchoolPaymentTrackingViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SchoolInvoiceViewSet(viewsets.ModelViewSet):
-    queryset = SchoolInvoice.objects.all()
     serializer_class = SchoolInvoiceSerializer
     permission_classes = [IsAuthenticated]
 

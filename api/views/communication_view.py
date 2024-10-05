@@ -15,7 +15,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class InformationViewSet(viewsets.ModelViewSet):
     serializer_class = InformationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,]
     search_fields = ['name']
     ordering_fields = ['name']
     ordering = ['-date_created']

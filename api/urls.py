@@ -9,7 +9,7 @@ from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolM
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    ActiveSchoolYearStudentsView, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsView, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearStudentsView, ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsView, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
@@ -27,6 +27,9 @@ router.register(r'classrooms', ClassroomViewSet, basename='classroom')
 router.register(r'inscriptions', InscriptionViewSet, basename="inscriptions")
 router.register(r'student-evaluations', StudentEvaluationViewSet, basename="student-evaluations")
 router.register(r'school-absences', SchoolAbsenceViewSet, basename='school-absence')
+router.register(r'school-statistics', SchoolStatisticsViewSet, basename='school-statistics')
+router.register(r'students', ActiveSchoolYearStudentsViewSet, basename='students')
+
 
 #URL FOR SUBJECT MANAGER
 router.register(r'school-calendars', SchoolCalendarViewSet, basename='schoolcalendar')
@@ -35,6 +38,7 @@ router.register(r'school-programs', SchoolProgramViewSet, basename='schoolprogra
 router.register(r'school-schedules', SchoolScheduleViewSet, basename='schoolschedule')
 router.register(r'subject-attributions', SubjectAttributionViewSet, basename='subject-attribution')
 router.register(r'school-report-cards', SchoolReportCardViewSet, basename='school-report-card')
+
 
 # URL FOR ADMIN MANAGER
 router.register(r'school-cycles', SchoolCycleViewSet, basename='schoolcycle')
@@ -65,8 +69,6 @@ router.register(r'school-expenses', SchoolExpenseViewSet, basename="school-expen
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('school-statistics/', SchoolStatisticsView.as_view(), name='school-statistics'),
-    path('active-school-year-students/', ActiveSchoolYearStudentsView.as_view(), name='active-school-year-students'),
     #URL FOR AUTHENTICATION
     path('login/', LoginAPIView.as_view(), name='login'),
     path('logout/', LogoutAPIView.as_view(), name='logout'),

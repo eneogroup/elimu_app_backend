@@ -1,13 +1,14 @@
 from rest_framework.response import Response
-from rest_framework import status, generics
-from rest_framework.views import APIView
+from rest_framework import status, generics, viewsets
+from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from django.contrib.auth import authenticate, login, logout
-
 from backend.models.account import User
 from backend.models.school_manager import School
+
+
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -18,31 +19,44 @@ def get_tokens_for_user(user):
     }
 
 
-class LoginAPIView(APIView):
 
-    def post(self, request, format=None):
-        username = request.data['username']
-        password = request.data['password']
-        code = request.data['school_code']
+class LoginViewSet(viewsets.ViewSet):
+    """
+    ViewSet pour gérer le login des utilisateurs.
+    """
+
+    @action(detail=False, methods=['post'], url_path='login')
+    def login_user(self, request):
+        # Récupération des données du corps de la requête
+        username = request.data.get('username')
+        password = request.data.get('password')
+        code = request.data.get('school_code')
+
+        # Vérification de l'existence de l'école
         try:
             school = School.objects.filter(code=code).first()
         except School.DoesNotExist:
-            return Response({"errors:":"Aucun établissement ne corresponds à ce code"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response({"errors": "Aucun établissement ne correspond à ce code"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Vérification de l'existence de l'utilisateur lié à l'école
         try:
-           User.objects.filter(school_code=school, username=username).filter()
+            user = User.objects.filter(school_code=school, username=username).first()
+            if not user:
+                raise User.DoesNotExist
         except User.DoesNotExist:
-            return Response({"errors:":"ERREUR: Aucun utilisateur ne corresponds à cet établissement"}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response({"errors": "Aucun utilisateur ne correspond à cet établissement"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Authentification de l'utilisateur
         user = authenticate(username=username, password=password)
-        print(user)
-        
         if user is not None:
-            login(request,user)
-            token = get_tokens_for_user(user)
+            # Connexion de l'utilisateur
+            login(request, user)
+            token = get_tokens_for_user(user)  # Fonction pour générer le token (JWT ou autre)
             return Response(token, status=status.HTTP_200_OK)
-        
-        return Response({"errors:":"Username or password incorrect !"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Retour en cas d'échec de l'authentification
+        return Response({"errors": "Nom d'utilisateur ou mot de passe incorrect !"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LogoutAPIView(generics.GenericAPIView):

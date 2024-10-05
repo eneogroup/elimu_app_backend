@@ -207,7 +207,6 @@ class SubjectAttributionViewSet(viewsets.ModelViewSet):
 
 
 class SchoolReportCardViewSet(viewsets.ModelViewSet):
-    queryset = SchoolReportCard.objects.all()
     serializer_class = SchoolReportCardSerializer
     permission_classes = [permissions.IsAuthenticated]
     

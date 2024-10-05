@@ -3,18 +3,19 @@ from rest_framework.response import Response
 from backend.models.account import ParentOfStudent, TeacherSchool
 from backend.models.school_manager import Inscription, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
-from rest_framework.views import APIView
-
 from backend.permissions.permission_app import IsDirector, IsManager
+from rest_framework.decorators import action
 
 
-class SchoolStatisticsView(APIView):
+
+class SchoolStatisticsViewSet(viewsets.ViewSet):
     """
-    Vue API qui renvoie le nombre total des enseignants, élèves inscrits et parents des élèves inscrits.
+    ViewSet qui renvoie les statistiques de l'école pour les enseignants, élèves inscrits et parents des élèves inscrits.
     """
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
 
-    def get(self, request, *args, **kwargs):
+    @action(detail=False, methods=['get'], url_path='statistics')
+    def get_statistics(self, request):
         user = request.user
         
         # Filtrer par l'école de l'utilisateur connecté
@@ -31,7 +32,11 @@ class SchoolStatisticsView(APIView):
         ).count()
         
         # Extraire tous les élèves inscrits
-        inscriptions = Inscription.objects.filter(classroom__school=school_code, is_active=True, school_year__is_current_year=True)
+        inscriptions = Inscription.objects.filter(
+            classroom__school=school_code, 
+            is_active=True, 
+            school_year__is_current_year=True
+        )
         pupils = [inscription.student for inscription in inscriptions]
 
         # Récupérer tous les parents des élèves inscrits
@@ -174,13 +179,16 @@ class StudentEvaluationViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Vous ne pouvez pas supprimer cette évaluation."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
-class ActiveSchoolYearStudentsView(views.APIView):
+
+
+class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
     """
-    Vue API pour récupérer les élèves inscrits pendant l'année scolaire active de l'école de l'utilisateur connecté.
+    ViewSet pour récupérer les élèves inscrits pendant l'année scolaire active de l'école de l'utilisateur connecté.
     """
     permission_classes = [permissions.IsAuthenticated]  # Exige que l'utilisateur soit authentifié
 
-    def get(self, request, *args, **kwargs):
+    @action(detail=False, methods=['get'], url_path='active-school-year-students')
+    def get_active_school_year_students(self, request):
         # Récupérer le code de l'école de l'utilisateur connecté
         school_code = request.user.school_code
 
