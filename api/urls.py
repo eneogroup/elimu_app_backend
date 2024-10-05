@@ -4,7 +4,7 @@ from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, P
 from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, MessageViewSet, TagViewSet
-from api.views.facturation_view import SchoolInvoiceViewSet, SchoolPaymentTrackingViewSet
+from api.views.facturation_view import ExpenseCategoryViewSet, SchoolExpenseViewSet, SchoolInvoiceViewSet, SchoolPaymentTrackingViewSet
 from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolMaterialViewSet
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
@@ -59,6 +59,8 @@ router.register(r'material-requests', MaterialRequestViewSet, basename='school-m
 # URL FOR FACTURATION
 router.register(r'school-invoices', SchoolInvoiceViewSet, basename='school-invoice')
 router.register(r'school-payment-tracking', SchoolPaymentTrackingViewSet, basename='school-payment-tracking')
+router.register(r'school-expense-categories', ExpenseCategoryViewSet, basename='school-expense-categories')
+router.register(r'school-expenses', SchoolExpenseViewSet, basename="school-expenses")
 
 
 urlpatterns = [

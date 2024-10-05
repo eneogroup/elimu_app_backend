@@ -1,4 +1,4 @@
-from backend.models.facturation import Payment, PaymentTracking, SchoolInvoice
+from backend.models.facturation import ExpenseCategory, Payment, PaymentTracking, SchoolExpense, SchoolInvoice
 from rest_framework import serializers
 
 class SchoolInvoiceSerializer(serializers.ModelSerializer):
@@ -29,3 +29,16 @@ class PaymentTrackingSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentTracking
         fields = '__all__'
+
+
+class ExpenseCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExpenseCategory
+        fields = '__all__'
+
+
+class SchoolExpenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolExpense
+        fields = '__all__'
+

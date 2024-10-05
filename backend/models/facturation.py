@@ -188,3 +188,47 @@ class PaymentTracking(models.Model):
         verbose_name = 'Suivi de paiement'
         verbose_name_plural = 'Suivis de paiements'
         ordering = ['-tracked_date']
+
+
+class ExpenseCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom de la catégorie")
+    description = models.TextField(null=True, blank=True, verbose_name="Description")
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Catégorie d\'expense'
+        verbose_name_plural = 'Catégories d\'expenses'
+        ordering = ['name']
+
+
+class SchoolExpense(models.Model):
+    category = models.ForeignKey(ExpenseCategory, on_delete=models.SET_NULL, null=True, verbose_name="Catégorie de dépense")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant")
+    description = models.TextField(null=True, blank=True, verbose_name="Description")
+    date = models.DateField(verbose_name="Date de dépense")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name="expenses")
+
+    def __str__(self):
+        return f"{self.category.name} - {self.amount} €"
+    
+    def get_total_expense(self):
+        return SchoolExpense.objects.filter(school=self.school).aggregate(Sum('amount'))['amount__sum']
+
+    class Meta:
+        verbose_name = 'Dépense'
+        verbose_name_plural = 'Dépenses'
+        ordering = ['-date']
+    
+    def get_expense_summary(self):
+        return {
+            'category': self.category.name,
+            'amount': self.amount,
+            'description': self.description,
+            'date': self.date,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
