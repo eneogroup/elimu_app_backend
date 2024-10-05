@@ -1,0 +1,22 @@
+# Ignorer les fichiers de base de données
+#*.sqlite3
+
+# Ignorer les fichiers de configuration de l'environnement
+.venv
+
+# Ignorer les fichiers de cache
+__pycache__/
+*.py[cod]
+
+# Ignorer les fichiers de log
+*.log
+
+# Ignorer le dossier des médias
+/media/
+
+# Ignorer le dossier des statiques
+/staticfiles/
+
+# Ignorer les fichiers temporaires de l'éditeur
+*.swp
+*.swo

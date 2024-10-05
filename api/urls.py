@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, PasswordResetConfirmView, PasswordResetView, TeacherSchoolViewSet, UserViewSet
-from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
+from api.views.auth.authentication_api import LoginViewSet, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, MessageViewSet, TagViewSet
 from api.views.facturation_view import ExpenseCategoryViewSet, SchoolExpenseViewSet, SchoolInvoiceViewSet, SchoolPaymentTrackingViewSet
@@ -9,7 +9,7 @@ from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolM
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    ActiveSchoolYearStudentsView, ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsView, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
@@ -66,11 +66,13 @@ router.register(r'school-payment-tracking', SchoolPaymentTrackingViewSet, basena
 router.register(r'school-expense-categories', ExpenseCategoryViewSet, basename='school-expense-categories')
 router.register(r'school-expenses', SchoolExpenseViewSet, basename="school-expenses")
 
+#URL FOR AUTHENTICATION
+router.register(r'auth', LoginViewSet, basename='auth')
+
 
 urlpatterns = [
     path('', include(router.urls)),
     #URL FOR AUTHENTICATION
-    path('login/', LoginAPIView.as_view(), name='login'),
     path('logout/', LogoutAPIView.as_view(), name='logout'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
