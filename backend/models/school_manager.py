@@ -1,6 +1,6 @@
 from django.db import models
 from django.forms import ValidationError
-from backend.models.admin_manager import SchoolLevel
+from backend.models.admin_manager import SchoolCycle, SchoolLevel
 import uuid
 import hashlib
 
@@ -35,6 +35,7 @@ class School(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     code = UUID4Field(auto_created=True, blank=True)
     name = models.CharField(max_length=100, verbose_name="Nom d'école")
+    school_cycle = models.ForeignKey(SchoolCycle, on_delete=models.SET_NULL, verbose_name="Cycle scolaire", blank=True, null=True)
     address = models.CharField(max_length=200, verbose_name="Adresse")
     city = models.CharField(max_length=100, verbose_name="Ville", choices=cities)
     postal_code = models.CharField(max_length=10, verbose_name="Code postal", blank=True, null=True)

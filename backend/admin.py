@@ -102,13 +102,13 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'address', 'city', 'email', 'phone', 'created_at',)
-    search_fields = ('name', 'address', 'city', 'email', 'phone')
-    list_filter = ('code', 'name', 'address', 'city', 'email', 'phone', 'created_at',)
+    list_display = ('code', 'name', 'school_cycle', 'address', 'city', 'email', 'phone', 'created_at',)
+    search_fields = ('name', 'address','school_cycle', 'city', 'email', 'phone')
+    list_filter = ('code', 'name','school_cycle', 'address', 'city',)
     ordering = ('id',)
     readonly_fields=('code', 'created_at', 'updated_at')
     fieldsets = (
-        ('Identifiants', {'fields': ('code', 'name')}),
+        ('Identifiants', {'fields': ('code', 'name','school_cycle')}),
         ('Adresse', {'fields': ('address', 'city', 'postal_code', 'email', 'phone', 'website')}),
         ('Logo', {'fields': ('logo',)}),
         ('Description', {'fields': ('description',)}),
