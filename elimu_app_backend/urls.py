@@ -29,7 +29,7 @@ from elimu_app_backend import settings
 schema_view = get_schema_view(
    openapi.Info(
       title="ELIMU API",
-      default_version='v1.0.0',
+      default_version='v1.0.1',
       description="Documentation de ELIMU API",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="eneogroug.cg@gmail.com"),

@@ -5,7 +5,7 @@
 .venv
 
 # Ignorer les fichiers de cache
-__pycache__/
+*/__pycache__/*
 *.py[cod]
 
 # Ignorer les fichiers de log
