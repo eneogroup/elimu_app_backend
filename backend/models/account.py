@@ -130,6 +130,12 @@ class Pupil(CommonProfile):
 
     def __str__(self):
         return f"Élève : {self.lastname} {self.firstname}"
+    
+    def full_name(self):
+        return f"{self.lastname} {self.firstname}"
+    
+    def get_parents(self):
+        return self.parents.all()
 
     def clean(self):
         if self.parents.count() < 1 or self.parents.count() > 2:
@@ -149,7 +155,7 @@ m2m_changed.connect(validate_parents, sender=Pupil.parents.through)
 
 
 class TeacherSchool(CommonProfile):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='teacher_profile', null=True, blank=True)
     school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", related_name='teacher_school')
     is_principal = models.BooleanField(verbose_name="Est principal", default=False)
     is_assistant = models.BooleanField(verbose_name="Est assistant", default=False)
