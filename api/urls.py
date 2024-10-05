@@ -5,7 +5,7 @@ from api.views.auth.authentication_api import LoginAPIView, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, MessageViewSet, TagViewSet
 from api.views.facturation_view import SchoolInvoiceViewSet, SchoolPaymentTrackingViewSet
-from api.views.library_view import EbookViewSet
+from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolMaterialViewSet
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
@@ -53,6 +53,8 @@ router.register(r'messages', MessageViewSet, basename='messages')
 
 # URL FOR LIBRARY MANAGER
 router.register(r'ebooks', EbookViewSet, basename='ebooks')
+router.register(r'materials', SchoolMaterialViewSet, basename='materials')
+router.register(r'material-requests', MaterialRequestViewSet, basename='school-material-requests')
 
 # URL FOR FACTURATION
 router.register(r'school-invoices', SchoolInvoiceViewSet, basename='school-invoice')

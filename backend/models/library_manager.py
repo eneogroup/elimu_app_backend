@@ -1,9 +1,5 @@
-import os
-from django.db import models
-
 from django.db import models
 from django.core.exceptions import ValidationError
-import os
 
 class Ebook(models.Model):
     title = models.CharField(max_length=100)
@@ -50,4 +46,57 @@ class Ebook(models.Model):
         super().save(*args, **kwargs)
 
 
+class SchoolMaterial(models.Model):
+    MATERIAL_TYPE_CHOICES = [
+        ('livre', 'Livre'),
+        ('ordinateur', 'Ordinateur'),
+        ('fourniture', 'Fourniture scolaire'),
+        ('autre', 'Autre'),
+    ]
+    
+    name = models.CharField(max_length=100, verbose_name="Nom du matériel")
+    description = models.TextField(null=True, blank=True, verbose_name="Description")
+    material_type = models.CharField(max_length=50, choices=MATERIAL_TYPE_CHOICES, verbose_name="Type de matériel")
+    quantity = models.PositiveIntegerField(verbose_name="Quantité")
+    available_quantity = models.PositiveIntegerField(verbose_name="Quantité disponible")
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+    
+    def is_available(self):
+        return self.available_quantity > 0
+
+
+class MaterialRequest(models.Model):
+    material = models.ForeignKey(SchoolMaterial, on_delete=models.CASCADE, related_name="requests")
+    requester = models.ForeignKey('backend.User', on_delete=models.CASCADE, verbose_name="Demandeur")
+    request_date = models.DateField(auto_now_add=True, verbose_name="Date de demande")
+    quantity_requested = models.PositiveIntegerField(verbose_name="Quantité demandée")
+    status = models.CharField(max_length=20, choices=[('approuvé', 'Approuvé'), ('rejeté', 'Rejeté'), ('en attente', 'En attente')], default='en attente', verbose_name="Statut")
+    approved_date = models.DateField(null=True, blank=True, verbose_name="Date d'approbation")
+    rejected_reason = models.TextField(null=True, blank=True, verbose_name="Raison du rejet")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Demande de matériel'
+        verbose_name_plural = 'Demandes de matériel'
+        
+    
+    def __str__(self):
+        return f"Demande de {self.requester} pour {self.material.name}"
+
+    def approve(self):
+        if self.quantity_requested <= self.material.available_quantity:
+            self.material.available_quantity -= self.quantity_requested
+            self.material.save()
+            self.status = 'approuvé'
+        else:
+            raise ValidationError("Quantité demandée dépasse la quantité disponible.")
+
+    def reject(self):
+        self.status = 'rejeté'
 
