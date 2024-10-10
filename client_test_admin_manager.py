@@ -1,7 +1,7 @@
 import requests
 
 # URL de base de votre API (modifiez selon vos besoins)
-BASE_URL = "http://localhost:8000/api/"
+BASE_URL = "http://127.0.0.1:8000/api/"
 
 # Identifiants de connexion
 username = "directeur_petit_prince"
@@ -18,6 +18,7 @@ def get_auth_token():
     }
     response = requests.post(login_url, data=data)
     if response.status_code == 200:
+        print(response.json()["access"])
         return response.json()["access"]
     else:
         print("Erreur lors de la connexion :", response.json())
@@ -43,8 +44,8 @@ if __name__ == "__main__":
     token = get_auth_token()
     if token:
         # Test des différentes vues
-        print("\n--- SchoolCycle ---")
-        school_cycle_url = f"{BASE_URL}school-cycles/"
+        print("\n--- SchoolYear ---")
+        school_cycle_url = f"{BASE_URL}school-years/"
         test_get_request(school_cycle_url, token)
         
         print("\n--- SchoolSeries ---")

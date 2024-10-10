@@ -143,7 +143,7 @@ class TeacherSchoolViewSet(viewsets.ModelViewSet):
 
 
 class ParentOfStudentViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ParentOfStudentSerializer
     
     def get_queryset(self):

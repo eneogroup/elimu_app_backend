@@ -12,7 +12,7 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
     """
     ViewSet qui renvoie les statistiques de l'école pour les enseignants, élèves inscrits et parents des élèves inscrits.
     """
-    permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['get'], url_path='statistics')
     def get_statistics(self, request):
@@ -28,7 +28,7 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
         total_pupils = Inscription.objects.filter(
             classroom__school=school_code,
             is_active=True,
-            school_year__is_active=True
+            school_year__is_current_year=True
         ).count()
         
         # Extraire tous les élèves inscrits
@@ -51,7 +51,7 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
 
 
 class SchoolYearViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = SchoolYearSerializer
 
     def get_queryset(self):

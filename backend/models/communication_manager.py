@@ -6,7 +6,7 @@ from django.utils.crypto import get_random_string
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -30,7 +30,7 @@ class Information(models.Model):
     name = models.CharField(max_length=200)
     content = models.TextField()
     image = models.ImageField(upload_to='information_images', blank=True)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
     published = models.BooleanField(default=True)
     views = models.PositiveIntegerField(default=0)
     # Ajout des tags

@@ -107,6 +107,7 @@ class StaffProfile(CommonProfile):
 class ParentOfStudent(CommonProfile):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='account_of_parent', blank=True, null=True)
     profession = models.CharField(max_length=50, blank=True, null=True)
+    #school = models.ForeignKey(School, on_delete=models.SET_NULL,  verbose_name="École", related_name='parent_school', blank=True, null=True)
 
     class Meta:
         verbose_name = "Parent d'élève"

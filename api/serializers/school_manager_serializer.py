@@ -6,7 +6,7 @@ from backend.models.school_manager import Inscription, SchoolAbsence, SchoolYear
 class SchoolYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolYear
-        fields = '__all__'
+        fields = ['id', 'year', 'is_current_year', 'start_date', 'end_date']
 
 class ClassroomSerializer(serializers.ModelSerializer):
     class Meta:
