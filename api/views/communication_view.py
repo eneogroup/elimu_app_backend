@@ -34,13 +34,13 @@ class InformationViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas modifier cet Information."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer cet v."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
@@ -64,13 +64,13 @@ class EventViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas modifier cet Événement."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer cet événement."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
@@ -95,13 +95,13 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas modifier cette Annonce."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer cette Annonce."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 

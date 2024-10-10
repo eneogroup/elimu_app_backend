@@ -99,7 +99,7 @@ class ActiveSchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ClassroomViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ClassroomSerializer
 
     def get_queryset(self):
@@ -194,12 +194,12 @@ class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
 
         # Récupérer l'année scolaire active de l'école
         try:
-            active_school_year = SchoolYear.objects.get(is_active=True, school_code=school_code)
+            active_school_year = SchoolYear.objects.get(is_current_year=True, school=school_code)
         except SchoolYear.DoesNotExist:
             return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_404_NOT_FOUND)
 
         # Récupérer les inscriptions des élèves pour l'année scolaire active
-        inscriptions = Inscription.objects.filter(school_year=active_school_year, classroom__school_code=school_code)
+        inscriptions = Inscription.objects.filter(school_year=active_school_year, classroom__school=school_code)
 
         # Sérialiser les données des inscriptions
         serializer = InscriptionSerializer(inscriptions, many=True)

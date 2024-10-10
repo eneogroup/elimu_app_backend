@@ -112,7 +112,7 @@ class PasswordResetConfirmView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = TeacherSerializer
 
     def get_queryset(self):
@@ -181,27 +181,30 @@ class ParentOfStudentViewSet(viewsets.ModelViewSet):
 
 
 
-class ParentsOfStudentsInSchoolView(APIView):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+class ParentsOfStudentsInSchoolViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet qui retourne les parents des élèves inscrits dans l'école de l'utilisateur connecté.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ParentOfStudentSerializer
 
-    def get(self, request, *args, **kwargs):
-        # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school`
-        user_school = request.user.school_code
+    def get_queryset(self):
+        # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school_code`
+        user_school = self.request.user.school_code
 
-        # Récupérer toutes les inscriptions pour cette école
-        inscriptions = Inscription.objects.filter(classroom__school=user_school, is_active=True, school_year__is_current_year=True)
+        # Récupérer toutes les inscriptions pour cette école qui sont actives et concernent l'année scolaire en cours
+        inscriptions = Inscription.objects.filter(
+            classroom__school=user_school,
+            is_active=True,
+            school_year__is_current_year=True
+        )
 
         # Extraire tous les élèves inscrits
         pupils = [inscription.student for inscription in inscriptions]
 
-        # Récupérer tous les parents des élèves inscrits
+        # Récupérer et retourner les parents des élèves inscrits
         parents = ParentOfStudent.objects.filter(parents_of_pupils__in=pupils).distinct()
-
-        # Sérialiser les données des parents
-        serializer = ParentOfStudentSerializer(parents, many=True)
-
-        return Response(serializer.data)
-
+        return parents
 
 class PupilsViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]

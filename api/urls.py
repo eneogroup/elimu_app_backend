@@ -1,12 +1,12 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, PasswordResetConfirmView, PasswordResetView, TeacherSchoolViewSet, UserViewSet
+from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, ParentsOfStudentsInSchoolViewSet, PasswordResetConfirmView, PasswordResetView, TeacherSchoolViewSet, UserViewSet
 from api.views.auth.authentication_api import LoginViewSet, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, MessageViewSet, TagViewSet
 from api.views.facturation_view import ExpenseCategoryViewSet, SchoolExpenseViewSet, SchoolInvoiceViewSet, SchoolPaymentTrackingViewSet
 from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolMaterialViewSet
-from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet
+from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet, SubjectViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
     ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
@@ -17,6 +17,7 @@ router = DefaultRouter()
 # URL FOR ACCOUNT
 router.register(r'teachers-school', TeacherSchoolViewSet, basename='teachers-school')
 router.register(r'parents', ParentOfStudentViewSet, basename='parents')
+router.register(r'parents-of-student-school', ParentsOfStudentsInSchoolViewSet, basename='parents-of-student-school')
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'get-current-user', CurrentUserViewSet, basename='get-current-user')
 
@@ -29,9 +30,11 @@ router.register(r'student-evaluations', StudentEvaluationViewSet, basename="stud
 router.register(r'school-absences', SchoolAbsenceViewSet, basename='school-absence')
 router.register(r'school-statistics', SchoolStatisticsViewSet, basename='school-statistics')
 router.register(r'students', ActiveSchoolYearStudentsViewSet, basename='students')
+router.register(r'pupils', SchoolYearViewSet, basename='pupils')
 
 
 #URL FOR SUBJECT MANAGER
+router.register(r'school-subject', SubjectViewSet, basename='school-subject')
 router.register(r'school-calendars', SchoolCalendarViewSet, basename='schoolcalendar')
 router.register(r'school-holidays', SchoolHolidayViewSet, basename='schoolholiday')
 router.register(r'school-programs', SchoolProgramViewSet, basename='schoolprogram')

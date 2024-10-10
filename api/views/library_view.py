@@ -7,7 +7,7 @@ from backend.permissions.permission_app import IsDirector, IsManager
 
 class EbookViewSet(viewsets.ModelViewSet):
     serializer_class = EbookSerializer
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         # Filtrer les livres par l'école de l'utilisateur connecté
@@ -23,13 +23,13 @@ class EbookViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas modifier ce livre."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school_code != request.user.school_code:
+        if instance.school != request.user.school_code:
             return Response({"detail": "Vous ne pouvez pas supprimer ce livre."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
