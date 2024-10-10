@@ -9,7 +9,7 @@ from backend.models.school_manager import Classroom, School, SchoolYear
 class Subject(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     name = models.CharField(max_length=50, verbose_name="Nom de la matière")
-    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    school = models.ForeignKey(School, on_delete=models.SET_NULL, verbose_name="École", null=True, blank=True)
     group = models.ForeignKey(SubjectGroup, on_delete=models.CASCADE, verbose_name="Groupe de matière")
     coefficient = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,7 +33,7 @@ class SchoolSchedule(models.Model):
     start_time = models.TimeField(verbose_name="Heure de début")
     end_time = models.TimeField(verbose_name="Heure de fin")
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name="Salle de classe")
-    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    school = models.ForeignKey(School, on_delete=models.SET_NULL, verbose_name="École", null=True, blank=True)
     teacher = models.ForeignKey(TeacherSchool, on_delete=models.CASCADE, verbose_name="Professeur")
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -167,7 +167,7 @@ class SchoolReportCard(models.Model):
     student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, verbose_name="Élève")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
     grade = models.CharField(max_length=5, verbose_name="Grade")
-    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -84,7 +84,7 @@ class ActiveSchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
         Récupérer l'année scolaire active pour l'école de l'utilisateur connecté.
         """
         user = self.request.user
-        return SchoolYear.objects.filter(is_active=True, school=user.school_code)
+        return SchoolYear.objects.filter(is_current_year=True, school=user.school_code)
 
     def list(self, request, *args, **kwargs):
         """
@@ -129,9 +129,6 @@ class InscriptionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Inscription.objects.filter(classroom__school=self.request.user.school_code)
 
-    def perform_create(self, serializer):
-        serializer.save(classroom=self.request.user.school_code)
-
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.classroom.school != request.user.school_code:
@@ -158,14 +155,12 @@ class InscriptionViewSet(viewsets.ModelViewSet):
 
 
 class StudentEvaluationViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = StudentEvaluationSerializer
 
     def get_queryset(self):
         return StudentEvaluation.objects.filter(inscription__classroom__school=self.request.user.school_code)
 
-    def perform_create(self, serializer):
-        serializer.save(inscription=self.request.user.school_code)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()

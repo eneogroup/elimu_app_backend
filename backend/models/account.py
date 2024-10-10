@@ -138,21 +138,21 @@ class Pupil(CommonProfile):
     def get_parents(self):
         return self.parents.all()
 
-    def clean(self):
-        if self.parents.count() < 1 or self.parents.count() > 2:
-            raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
+    # def clean(self):
+    #     if self.parents.count() < 1 or self.parents.count() > 2:
+    #         raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
 
     def display_parents(self):
         return ", ".join(str(parent) for parent in self.parents.all())
     display_parents.short_description = 'Parents'
 
-# Signal to validate the number of parents
-def validate_parents(sender, **kwargs):
-    if kwargs['instance'].parents.count() < 1 or kwargs['instance'].parents.count() > 2:
-        raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
+# # Signal to validate the number of parents
+# def validate_parents(sender, **kwargs):
+#     if kwargs['instance'].parents.count() < 1 or kwargs['instance'].parents.count() > 2:
+#         raise ValidationError('Un élève doit avoir au moins un parent et au maximum deux parents.')
 
-# Connect the signal
-m2m_changed.connect(validate_parents, sender=Pupil.parents.through)
+# # Connect the signal
+# m2m_changed.connect(validate_parents, sender=Pupil.parents.through)
 
 
 class TeacherSchool(CommonProfile):

@@ -13,7 +13,7 @@ import os
 class SchoolInvoice(models.Model):
     invoice_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, related_name='Élève')
-    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name='École')
+    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, related_name='École', blank=True,null=True)
     classroom = models.ForeignKey('backend.Classroom', on_delete=models.CASCADE, verbose_name="Salle de classe")
     date = models.DateField(verbose_name='Date de facturation')
     due_date = models.DateField(verbose_name='Date d\'échéance')
@@ -22,6 +22,7 @@ class SchoolInvoice(models.Model):
     choices = [('Entièrement payé', 'Entièrement payé'), ('Non payé', 'Non payé'), ('Avance', 'Avance')]
     invoice_status = models.CharField(max_length=20, choices=choices, verbose_name='Statut')
     payment_method = models.CharField(max_length=50, blank=True, verbose_name='Mode de paiement')
+    is_paid = models.BooleanField(default=False, verbose_name='Payé')
     is_recurring = models.BooleanField(default=False, verbose_name='Facture récurrente')
     recurrence_period = models.CharField(max_length=20, blank=True, choices=[('Mensuel', 'Mensuel'), ('Trimestriel', 'Trimestriel'), ('Annuel', 'Annuel')])
     is_active = models.BooleanField(default=True)
@@ -125,6 +126,7 @@ class Payment(models.Model):
     payment_date = models.DateField(auto_now_add=True, verbose_name='Date de paiement')
     payment_method = models.CharField(max_length=50, verbose_name='Mode de paiement')
     is_partial = models.BooleanField(default=False, verbose_name='Paiement partiel')
+    is_paid = models.BooleanField(default=False, verbose_name='Payé')
     reference_number = models.CharField(max_length=50, blank=True, verbose_name='Numéro de référence')
     notes = models.TextField(blank=True, verbose_name='Notes')
 

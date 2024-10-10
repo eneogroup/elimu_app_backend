@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, ParentsOfStudentsInSchoolViewSet, PasswordResetConfirmView, PasswordResetView, TeacherSchoolViewSet, UserViewSet
+from api.views.account_view import CurrentUserViewSet, ParentOfStudentViewSet, ParentsOfStudentsInSchoolViewSet, PasswordResetConfirmView, PasswordResetView, PupilsViewset, TeacherSchoolViewSet, UserViewSet
 from api.views.auth.authentication_api import LoginViewSet, LogoutAPIView
 from rest_framework.routers import DefaultRouter
 from api.views.communication_view import AnnouncementViewSet, EventViewSet, InformationViewSet, MessageViewSet, TagViewSet
@@ -30,7 +30,7 @@ router.register(r'student-evaluations', StudentEvaluationViewSet, basename="stud
 router.register(r'school-absences', SchoolAbsenceViewSet, basename='school-absence')
 router.register(r'school-statistics', SchoolStatisticsViewSet, basename='school-statistics')
 router.register(r'students', ActiveSchoolYearStudentsViewSet, basename='students')
-router.register(r'pupils', SchoolYearViewSet, basename='pupils')
+router.register(r'pupils', PupilsViewset, basename='pupils')
 
 
 #URL FOR SUBJECT MANAGER

@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = SubjectSerializer
 
     def get_queryset(self):

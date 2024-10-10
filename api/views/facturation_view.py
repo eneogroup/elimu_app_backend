@@ -39,44 +39,62 @@ class SchoolInvoiceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Récupère toutes les factures de l'école de l'utilisateur connecté (ou un filtre personnalisé)."""
         return SchoolInvoice.objects.filter(school=self.request.user.school_code)
+    
+    def perform_create(self, serializer):
+        """Créer une nouvelle facture avec les informations fournies par l'utilisateur."""
+        serializer.save(school=self.request.user.school_code)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!= request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas modifier cette facture."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!= request.user.school_code:
+            return Response({"detail": "Vous ne pouvez pas supprimer cette facture."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+    
+    
 
-    @action(detail=True, methods=['post'])
-    def mark_as_paid(self, request, pk=None):
-        """Marquer une facture comme payée."""
-        invoice = self.get_object()
-        amount = request.data.get('amount')
+    # @action(detail=True, methods=['post'])
+    # def mark_as_paid(self, request, pk=None):
+    #     """Marquer une facture comme payée."""
+    #     invoice = self.get_object()
+    #     amount = request.data.get('amount')
         
-        if amount:
-            invoice.mark_as_paid(amount=amount)
-            return Response({'status': 'Facture marquée comme payée'}, status=status.HTTP_200_OK)
-        return Response({'error': 'Le montant est requis'}, status=status.HTTP_400_BAD_REQUEST)
+    #     if amount:
+    #         invoice.mark_as_paid(amount=amount)
+    #         return Response({'status': 'Facture marquée comme payée'}, status=status.HTTP_200_OK)
+    #     return Response({'error': 'Le montant est requis'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
-    def send_invoice_email(self, request, pk=None):
-        """Envoyer la facture par email à l'élève."""
-        invoice = self.get_object()
-        try:
-            invoice.send_invoice_email()
-            return Response({'status': 'Facture envoyée par email'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # @action(detail=True, methods=['post'])
+    # def send_invoice_email(self, request, pk=None):
+    #     """Envoyer la facture par email à l'élève."""
+    #     invoice = self.get_object()
+    #     try:
+    #         invoice.send_invoice_email()
+    #         return Response({'status': 'Facture envoyée par email'}, status=status.HTTP_200_OK)
+    #     except Exception as e:
+    #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=True, methods=['get'])
-    def payment_history(self, request, pk=None):
-        """Obtenir l'historique des paiements pour une facture."""
-        invoice = self.get_object()
-        payment_history = invoice.get_payment_history()
-        return Response(payment_history, status=status.HTTP_200_OK)
+    # @action(detail=True, methods=['get'])
+    # def payment_history(self, request, pk=None):
+    #     """Obtenir l'historique des paiements pour une facture."""
+    #     invoice = self.get_object()
+    #     payment_history = invoice.get_payment_history()
+    #     return Response(payment_history, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['get'])
-    def generate_invoice_pdf(self, request, pk=None):
-        """Générer un PDF de la facture."""
-        invoice = self.get_object()
-        try:
-            pdf_filename = invoice.generate_invoice_pdf()
-            return Response({'pdf_file': pdf_filename}, status=status.HTTP_200_OK)
-        except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    # @action(detail=True, methods=['get'])
+    # def generate_invoice_pdf(self, request, pk=None):
+    #     """Générer un PDF de la facture."""
+    #     invoice = self.get_object()
+    #     try:
+    #         pdf_filename = invoice.generate_invoice_pdf()
+    #         return Response({'pdf_file': pdf_filename}, status=status.HTTP_200_OK)
+    #     except ValueError as e:
+    #         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ExpenseCategoryViewSet(viewsets.ModelViewSet):

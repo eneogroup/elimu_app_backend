@@ -10,7 +10,7 @@ class SchoolInvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolInvoice
         fields = [
-            'invoice_number', 'student', 'school', 'classroom', 'date', 'due_date',
+            'id', 'invoice_number', 'is_paid', 'student', 'school', 'classroom', 'date', 'due_date',
             'amount', 'schooling_of', 'invoice_status', 'payment_method', 'is_recurring',
             'recurrence_period', 'is_active', 'late_fee', 'created_at', 'updated_at',
             'total_paid', 'remaining_amount', 'payment_status', 'late_fees'

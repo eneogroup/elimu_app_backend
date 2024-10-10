@@ -15,31 +15,31 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 
 class InscriptionSerializer(serializers.ModelSerializer):
-    student = PupilSerializer(read_only=True)
+    #student = PupilSerializer(read_only=True)
     class Meta:
         model = Inscription
         fields = '__all__'  # Incluez tous les champs ou spécifiez ceux que vous voulez exposer
 
-    def validate(self, attrs):
-        student = attrs.get('student')
-        school_year = attrs.get('school_year')
-        classroom = attrs.get('classroom')
+    # def validate(self, attrs):
+    #     student = attrs.get('student')
+    #     school_year = attrs.get('school_year')
+    #     classroom = attrs.get('classroom')
 
-        # Vérification que l'élève n'est pas déjà inscrit dans cette école pour la même année scolaire
-        existing_inscription = Inscription.objects.filter(
-            student=student,
-            school_year=school_year,
-            classroom__school=classroom.school
-        ).exists()
+    #     # Vérification que l'élève n'est pas déjà inscrit dans cette école pour la même année scolaire
+    #     existing_inscription = Inscription.objects.filter(
+    #         student=student,
+    #         school_year=school_year,
+    #         classroom__school=classroom.school
+    #     ).exists()
 
-        if existing_inscription:
-            raise serializers.ValidationError("L'élève est déjà inscrit dans cette école pour l'année scolaire sélectionnée.")
+    #     if existing_inscription:
+    #         raise serializers.ValidationError("L'élève est déjà inscrit dans cette école pour l'année scolaire sélectionnée.")
 
-        # Vérification pour s'assurer que l'élève appartient à la même école que la salle de classe
-        if student.school_code != classroom.school:
-            raise serializers.ValidationError("L'élève doit appartenir à la même école que la salle de classe.")
+    #     # Vérification pour s'assurer que l'élève appartient à la même école que la salle de classe
+    #     if student__school_code != classroom.school:
+    #         raise serializers.ValidationError("L'élève doit appartenir à la même école que la salle de classe.")
 
-        return super().validate(attrs)
+    #     return super().validate(attrs)
 
 class StudentEvaluationSerializer(serializers.ModelSerializer):
     class Meta:

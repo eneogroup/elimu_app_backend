@@ -11,18 +11,18 @@ class SchoolScheduleSerializer(serializers.ModelSerializer):
         model = SchoolSchedule
         fields = '__all__'  # Incluez tous les champs ou spécifiez ceux que vous voulez exposer
 
-    def validate(self, attrs):
-        # Vous pouvez inclure ici les validations personnalisées
-        subject = attrs.get('subject')
-        classroom = attrs.get('classroom')
-        teacher = attrs.get('teacher')
+    # def validate(self, attrs):
+    #     # Vous pouvez inclure ici les validations personnalisées
+    #     subject = attrs.get('subject')
+    #     classroom = attrs.get('classroom')
+    #     teacher = attrs.get('teacher')
         
-        if subject.school != classroom.school:
-            raise serializers.ValidationError("La salle de classe doit appartenir à la même école que la matière.")
-        if subject.school != teacher.school_code:
-            raise serializers.ValidationError("L'enseignant doit appartenir à la même école que la matière.")
+    #     if subject.school != classroom.school:
+    #         raise serializers.ValidationError("La salle de classe doit appartenir à la même école que la matière.")
+    #     if subject.school != teacher.school_code:
+    #         raise serializers.ValidationError("L'enseignant doit appartenir à la même école que la matière.")
         
-        return super().validate(attrs)
+    #     return super().validate(attrs)
 
 class SchoolCalendarSerializer(serializers.ModelSerializer):
     class Meta:
