@@ -88,6 +88,7 @@ class Classroom(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
     name = models.CharField(max_length=100, verbose_name="Nom de la salle")
+    frequency_of_attendance = models.CharField(max_length=100, verbose_name="Frequence de frequentation", null=True)
     school_level = models.ForeignKey(SchoolLevel, on_delete=models.CASCADE, verbose_name="Niveau scolaire")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")

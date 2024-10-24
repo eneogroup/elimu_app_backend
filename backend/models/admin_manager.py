@@ -3,6 +3,8 @@ from django.db import models
 class SchoolCycle(models.Model):
     name = models.CharField(max_length=25, verbose_name="Nom du cycle scolaire")
     description = models.TextField(verbose_name="Description du cycle scolaire", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -14,6 +16,8 @@ class SchoolCycle(models.Model):
 
 class SchoolSeries(models.Model):
     name = models.CharField(max_length=25, verbose_name="Nom de la série")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -27,6 +31,8 @@ class SchoolLevel(models.Model):
     name = models.CharField(max_length=25, verbose_name="Nom du niveau")
     series = models.ForeignKey(SchoolSeries, on_delete=models.CASCADE, verbose_name="Série", blank=True, null=True)
     cycle = models.ForeignKey(SchoolCycle, on_delete=models.CASCADE, verbose_name="Cycle scolaire")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     
     def __str__(self):
@@ -40,6 +46,8 @@ class SchoolLevel(models.Model):
 class SubjectGroup(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     name = models.CharField(max_length=50, verbose_name="Nom du groupe de matière")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -52,6 +60,8 @@ class SubjectGroup(models.Model):
 class DocumentType(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     name = models.CharField(max_length=50, verbose_name="Nom du type de document")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -64,6 +74,8 @@ class DocumentType(models.Model):
 class SanctionOrAppreciationType(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     name = models.CharField(max_length=50, verbose_name="Nom du type de sanction ou d'appréciation")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name

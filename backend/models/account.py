@@ -37,7 +37,6 @@ class CommonProfile(models.Model):
 
 class UserRole(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Nom du rôle")
-    permissions = models.ManyToManyField('auth.Permission', related_name='role_permissions')
 
     def __str__(self):
         return self.name
@@ -157,7 +156,7 @@ class Pupil(CommonProfile):
 
 class TeacherSchool(CommonProfile):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='teacher_profile', null=True, blank=True)
-    school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", related_name='teacher_school')
+    school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", related_name='teacher_school', null=True)
     is_principal = models.BooleanField(verbose_name="Est principal", default=False)
     is_assistant = models.BooleanField(verbose_name="Est assistant", default=False)
     subjects = models.ManyToManyField('Subject', related_name='teachers', verbose_name="Matières enseignées", blank=True)
