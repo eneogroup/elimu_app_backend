@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from backend.models import Information
-from backend.models.communication_manager import Announcement, Event, Message, Tag
+from backend.models.admin_manager import Tag
+from backend.models.communication_manager import Announcement, Event, Message
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
