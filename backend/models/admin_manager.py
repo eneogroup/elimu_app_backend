@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 class SchoolCycle(models.Model):
     name = models.CharField(max_length=25, verbose_name="Nom du cycle scolaire")
@@ -83,4 +84,40 @@ class SanctionOrAppreciationType(models.Model):
     class Meta:
         verbose_name = "Type de sanction ou d'appréciation"
         verbose_name_plural = "Types de sanctions ou d'appréciations"
+        ordering = ['name']
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    
+    def __str__(self):
+        return self.name
+    
+    def get_absolute_url(self):
+        return f'/tag/{self.slug}'
+    
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+
+class ExpenseCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Nom de la catégorie")
+    description = models.TextField(null=True, blank=True, verbose_name="Description")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Catégorie d\'expense'
+        verbose_name_plural = 'Catégories d\'expenses'
         ordering = ['name']

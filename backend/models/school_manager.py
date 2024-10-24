@@ -58,7 +58,7 @@ class School(models.Model):
 
 class SchoolYear(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", null=True)
     year = models.CharField(max_length=20, verbose_name="Année scolaire")
     is_current_year = models.BooleanField(default=False, verbose_name="Année en cours")
     start_date = models.DateField(verbose_name="Date de début")
@@ -86,7 +86,7 @@ class SchoolYear(models.Model):
 
 class Classroom(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École")
+    school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École", null=True)
     name = models.CharField(max_length=100, verbose_name="Nom de la salle")
     frequency_of_attendance = models.CharField(max_length=100, verbose_name="Frequence de frequentation", null=True)
     school_level = models.ForeignKey(SchoolLevel, on_delete=models.CASCADE, verbose_name="Niveau scolaire")

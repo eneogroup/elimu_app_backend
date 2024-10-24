@@ -8,7 +8,7 @@ class Ebook(models.Model):
     publication_date = models.DateField()
     cover_image = models.ImageField(upload_to='cover_images')
     pdf_file = models.FileField(upload_to='pdf_files')
-    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, null=True, blank=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

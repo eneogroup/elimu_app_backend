@@ -4,27 +4,6 @@ from django.utils.text import slugify
 from django.core.files.storage import default_storage
 from django.utils.crypto import get_random_string
 
-class Tag(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    
-    def __str__(self):
-        return self.name
-    
-    def get_absolute_url(self):
-        return f'/tag/{self.slug}'
-    
-    class Meta:
-        verbose_name = 'Tag'
-        verbose_name_plural = 'Tags'
-    
 
 class Information(models.Model):
     name = models.CharField(max_length=200)
@@ -34,9 +13,9 @@ class Information(models.Model):
     published = models.BooleanField(default=True)
     views = models.PositiveIntegerField(default=0)
     # Ajout des tags
-    tags = models.ManyToManyField('Tag', blank=True, related_name='informations')
+    tags = models.ManyToManyField('backend.Tag', blank=True, related_name='informations')
     author = models.ForeignKey('backend.User', on_delete=models.SET_NULL, null=True, blank=True)
-    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, null=True, blank=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     
@@ -101,9 +80,9 @@ class Event(models.Model):
     end_date = models.DateTimeField()
     published = models.BooleanField(default=True)
     views = models.PositiveIntegerField(default=0)
-    tags = models.ManyToManyField('Tag', blank=True, related_name='events')
+    tags = models.ManyToManyField('backend.Tag', blank=True, related_name='events')
     author = models.ForeignKey('backend.User', on_delete=models.SET_NULL, null=True, blank=True)
-    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, null=True, blank=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     
@@ -163,9 +142,9 @@ class Announcement(models.Model):
     slug = models.SlugField(unique=True, blank=True, null=True)
     published = models.BooleanField(default=True)
     views = models.PositiveIntegerField(default=0)
-    tags = models.ManyToManyField('Tag', blank=True, related_name='announcements')
+    tags = models.ManyToManyField('backend.Tag', blank=True, related_name='announcements')
     author = models.ForeignKey('backend.User', on_delete=models.SET_NULL, null=True, blank=True)
-    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, null=True, blank=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     

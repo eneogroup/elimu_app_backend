@@ -1,9 +1,11 @@
 from django.db import models
+from django.db.models import Sum
 import uuid
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from backend.models.admin_manager import ExpenseCategory
 from elimu_app_backend import settings
 from backend.constant import months
 from django.core.files.base import ContentFile
@@ -13,7 +15,7 @@ import os
 class SchoolInvoice(models.Model):
     invoice_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, related_name='Élève')
-    school = models.ForeignKey('backend.School', on_delete=models.SET_NULL, related_name='École', blank=True,null=True)
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name='École',null=True)
     classroom = models.ForeignKey('backend.Classroom', on_delete=models.CASCADE, verbose_name="Salle de classe")
     date = models.DateField(verbose_name='Date de facturation')
     due_date = models.DateField(verbose_name='Date d\'échéance')
@@ -195,19 +197,6 @@ class PaymentTracking(models.Model):
         ordering = ['-tracked_date']
 
 
-class ExpenseCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Nom de la catégorie")
-    description = models.TextField(null=True, blank=True, verbose_name="Description")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Catégorie d\'expense'
-        verbose_name_plural = 'Catégories d\'expenses'
-        ordering = ['name']
 
 
 class SchoolExpense(models.Model):
@@ -217,7 +206,7 @@ class SchoolExpense(models.Model):
     date = models.DateField(verbose_name="Date de dépense")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name="expenses")
+    school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name="expenses", null=True)
 
     def __str__(self):
         return f"{self.category.name} - {self.amount} €"

@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
     role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, verbose_name="Rôle", blank=True, null=True)
-    school_code = models.ForeignKey(School, on_delete=models.SET_NULL, verbose_name="Code École", blank=True, null=True)
+    school_code = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="Code École", null=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
