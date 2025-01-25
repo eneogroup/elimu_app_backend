@@ -76,7 +76,7 @@ router.register(r'auth', LoginViewSet, basename='auth')
 urlpatterns = [
     path('', include(router.urls)),
     #URL FOR AUTHENTICATION
-    # path('logout/', LogoutAPIView.as_view(), name='logout'),
+    path('logout/', LogoutAPIView.as_view(), name='logout'),
     # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),

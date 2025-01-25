@@ -60,26 +60,45 @@ class LoginViewSet(viewsets.ViewSet):
 
 
 class LogoutAPIView(generics.GenericAPIView):
+    """
+    Endpoint pour déconnecter un utilisateur en blacklistant son token d'accès.
+    L'utilisateur doit être authentifié.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         try:
-            # Obtenir le token d'accès depuis le header Authorization
+            # Vérifier si le header Authorization est présent et valide
             auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-            if auth_header:
-                token = auth_header.split()[1]  # 'Bearer <token>'
+            if not auth_header.startswith('Bearer '):
+                return Response(
+                    {'error': 'Invalid or missing Authorization header.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Extraire le token depuis le header
+            token = auth_header.split()[1]
+            print(token)
 
-                # Récupérer l'instance OutstandingToken
+            # Rechercher le token dans OutstandingToken
+            try:
                 outstanding_token = OutstandingToken.objects.get(token=token)
+            except OutstandingToken.DoesNotExist:
+                return Response(
+                    {'error': 'Token does not exist or is already invalidated.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-                # Blacklister le token
-                BlacklistedToken.objects.create(token=outstanding_token)
-                
-                return Response({'message': 'Logout successful.'}, status=status.HTTP_205_RESET_CONTENT)
-            else:
-                return Response({'error': 'Token not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Blacklister le token
+            BlacklistedToken.objects.create(token=outstanding_token)
 
-        except OutstandingToken.DoesNotExist:
-            return Response({'error': 'Token does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'message': 'Logout successful.'},
+                status=status.HTTP_205_RESET_CONTENT
+            )
+
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': f'An unexpected error occurred: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
