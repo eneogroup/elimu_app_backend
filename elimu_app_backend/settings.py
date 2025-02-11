@@ -60,6 +60,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://192.168.1.71:8000",  # Adresse IP du serveur Django
+    "http://localhost:41441",    # Si Flutter Web s'exécute sur localhost:3000
 ]
 
 ROOT_URLCONF = 'elimu_app_backend.urls'
