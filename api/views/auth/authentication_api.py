@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from django.contrib.auth import authenticate, login, logout
 from backend.models.account import User
-from backend.models.school_manager import School
+from backend.models.school_manager import School, SchoolYear, UserRegistration
 
 
 
@@ -27,36 +27,37 @@ class LoginViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'], url_path='login')
     def login_user(self, request):
-        # Récupération des données du corps de la requête
         username = request.data.get('username')
         password = request.data.get('password')
         code = request.data.get('school_code')
 
-        # Vérification de l'existence de l'école
-        try:
-            school = School.objects.filter(code=code).first()
-        except School.DoesNotExist:
+        # Vérifier l'existence de l'école
+        school = School.objects.filter(code=code).first()
+        if not school:
             return Response({"errors": "Aucun établissement ne correspond à ce code"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Vérification de l'existence de l'utilisateur lié à l'école
-        try:
-            user = User.objects.filter(school_code=school, username=username).first()
-            if not user:
-                raise User.DoesNotExist
-        except User.DoesNotExist:
+        # Vérifier l'existence de l'utilisateur lié à l'école
+        user = User.objects.filter(username=username, school=school).first()
+
+        if not user:
+            current_academic_year = SchoolYear.objects.filter(is_current_year=True, school=school).first()
+            user_request = User.objects.filter(username=username).first()
+            user = UserRegistration.objects.filter(school=school, school_year=current_academic_year, user=user_request).first()
+
+        if not user:
             return Response({"errors": "Aucun utilisateur ne correspond à cet établissement"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Authentification de l'utilisateur
-        user = authenticate(username=username, password=password)
+        # Authentifier l'utilisateur avec son mot de passe
+        user = authenticate(request, username=user.user.username, password=password)
+
         if user is not None:
-            # Connexion de l'utilisateur
+            # Connexion et génération du token
             login(request, user)
-            token = get_tokens_for_user(user)  # Fonction pour générer le token (JWT ou autre)
+            token = get_tokens_for_user(user)
+            request.session["school"] = school
             return Response(token, status=status.HTTP_200_OK)
 
-        # Retour en cas d'échec de l'authentification
         return Response({"errors": "Nom d'utilisateur ou mot de passe incorrect !"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class LogoutAPIView(generics.GenericAPIView):

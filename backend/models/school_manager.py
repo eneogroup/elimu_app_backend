@@ -135,8 +135,8 @@ class UserRegistration(models.Model):
         return f"{self.user.full_name if self.user.full_name else self.user.username} - {self.school_year.year if self.school_year else 'N/A'}"
 
     def clean(self):
-        # if not self.school_year or not self.classroom:
-        #     raise ValidationError("Un élève doit être inscrit à une année scolaire et une salle de classe.")
+        if not self.school_year or not self.classroom:
+            raise ValidationError("Un élève doit être inscrit à une année scolaire et une salle de classe.")
         if not self.school:
             raise ValidationError("Un enseignant doit être rattaché à une école.")
 

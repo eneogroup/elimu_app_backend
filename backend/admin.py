@@ -92,14 +92,14 @@ class SchoolAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'lastname', 'firstname', 'gender', 'phone','email', 'address',)
-    search_fields = ('username', 'lastname', 'firstname', 'phone', 'email',)
-    list_filter = ('username', 'lastname', 'firstname', 'gender', 'phone', 'email', 'address')
+    search_fields = ('username','school', 'lastname', 'firstname', 'phone', 'email',)
+    list_filter = ('username','school', 'lastname', 'firstname', 'gender', 'phone', 'email', 'address')
     ordering = ('id',)
     fieldsets = (
         ('Information Compte Utilisateur', {'fields': ('roles', 'username', 'email', 'password',)}),
         ('Profil', {'fields': ('is_admin', 'is_active', 'photo',)}),
         ('Information Général', {
-            'fields': ('matricule', 'lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
+            'fields': ('school', 'matricule', 'lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
         ('Coordonnée Personnel', {
             'fields': ('phone', 'address',)}),
         ('Information Enseignant ou Parent', {
