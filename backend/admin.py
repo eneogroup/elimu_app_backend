@@ -96,9 +96,9 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('id',)
     fieldsets = (
         ('Information Compte Utilisateur', {'fields': ('roles', 'username', 'email', 'password',)}),
-        ('Profil', {'fields': ('is_admin', 'is_active', 'photo')}),
+        ('Profil', {'fields': ('is_admin', 'is_active', 'photo',)}),
         ('Information Général', {
-            'fields': ('matricule','lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
+            'fields': ('matricule','school_code', 'lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
         ('Coordonnée Personnel', {
             'fields': ('phone', 'address',)}),
         ('Information Enseignant ou Parent', {
