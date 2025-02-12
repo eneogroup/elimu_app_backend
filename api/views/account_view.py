@@ -2,11 +2,12 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from backend.models.account import User
 from api.serializers.account_serializer import PasswordResetConfirmSerializer, PasswordResetSerializer,  UserRoleSerializer, UserSerializer
 from rest_framework import status, views
 
-from backend.models.school_manager import UserRegistration
+from backend.models.school_manager import Classroom, SchoolYear, UserRegistration
 from backend.permissions.permission_app import IsManager, IsDirector
 
 User = get_user_model()
@@ -18,63 +19,6 @@ class UserRoleViewSet(viewsets.ReadOnlyModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
-
-    def get_permissions(self):
-        """
-        Retourne les permissions en fonction de l'action.
-        """
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            # Seuls les gestionnaires ou directeurs peuvent créer, modifier ou supprimer des utilisateurs
-            return [IsManager() or IsDirector()]
-        return super().get_permissions()
-
-    def get_queryset(self):
-        """
-        Filtrer les utilisateurs pour permettre à chaque utilisateur de voir ses propres données
-        ou, si c'est un gestionnaire ou directeur, de voir tout le monde dans son école.
-        """
-        user = self.request.user
-        if user.role.filter(name__in=['Gestionnaire', 'Directeur']).exists():
-            # Les gestionnaires et directeurs voient tous les utilisateurs de leur école
-            return User.objects.filter(school_code=user.school_code)
-        # Autres utilisateurs voient uniquement leur propre compte
-        return User.objects.filter(id=user.id, school_code=user.school_code)
-
-    def perform_create(self, serializer):
-        """
-        Associer l'utilisateur à l'école de l'utilisateur connecté lors de la création.
-        """
-        serializer.save(school_code=self.request.user.school_code)
-
-    def create(self, request, *args, **kwargs):
-        """
-        Personnaliser la création pour inclure automatiquement le code de l'école.
-        """
-        return super().create(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        """
-        Empêcher les utilisateurs de modifier les informations des utilisateurs d'une autre école.
-        """
-        instance = self.get_object()
-        if instance.school_code != request.user.school_code:
-            return Response(
-                {"detail": "Vous ne pouvez pas modifier cet utilisateur."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        Empêcher les utilisateurs de supprimer un utilisateur d'une autre école.
-        """
-        instance = self.get_object()
-        if instance.school_code != request.user.school_code:
-            return Response(
-                {"detail": "Vous ne pouvez pas supprimer cet utilisateur."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().destroy(request, *args, **kwargs)
 
 
 class CurrentUserViewSet(viewsets.ViewSet):
@@ -111,75 +55,213 @@ class PasswordResetConfirmView(views.APIView):
             return Response({"detail": "Mot de passe changé avec succès."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class TeacherSchoolViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
 
-    def get_queryset(self):
-        # Filtrer les enseignants par l'école de l'utilisateur connecté
-        return User.objects.filter(school_code=self.request.user.school_code)
-
-    def perform_create(self, serializer):
-        # Associer l'enseignant à l'école de l'utilisateur connecté
-        serializer.save(school_code=self.request.user.school_code)
-
-    def create(self, request, *args, **kwargs):
-        # Personnaliser la création pour inclure l'école de l'utilisateur
-        return super().create(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        # S'assurer que l'utilisateur ne modifie pas l'école d'un enseignant
-        instance = self.get_object()
-        if instance.school_code != request.user.school_code:
-            return Response({"detail": "Vous ne pouvez pas modifier cet enseignant."}, status=status.HTTP_403_FORBIDDEN)
-        return super().update(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        # S'assurer que l'utilisateur ne supprime pas un enseignant d'une autre école
-        instance = self.get_object()
-        if instance.school_code != request.user.school_code:
-            return Response({"detail": "Vous ne pouvez pas supprimer cet enseignant."}, status=status.HTTP_403_FORBIDDEN)
-        return super().destroy(request, *args, **kwargs)
-
-
-class ParentOfStudentViewSet(viewsets.ModelViewSet):
+class PupilsViewSet(viewsets.ViewSet):
     """
-    ViewSet qui retourne les parents des élèves.
-    """
-    queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
-
-
-
-
-class ParentsOfStudentsInSchoolViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet qui retourne les parents des élèves inscrits dans l'école de l'utilisateur connecté.
+    ViewSet pour gérer la liste et les détails des élèves d'une école.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
 
-    def get_queryset(self):
-        # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school_code`
-        user_school = self.request.user.school_code
-
-        # Récupérer toutes les inscriptions pour cette école qui sont actives et concernent l'année scolaire en cours
-        inscriptions = UserRegistration.objects.filter(
-            classroom__school=user_school,
-            is_active=True,
-            school_year__is_current_year=True
+    def list(self, request):
+        """
+        Récupérer la liste des élèves de l'école de l'utilisateur connecté.
+        """
+        school = request.session.get('school')  # Récupérer l'école en session
+        pupils = UserRegistration.objects.filter(
+            school=school,
+            user__roles__name__iexact="Élève"
         )
+        serializer = UserSerializer(pupils, many=True)
+        return Response(serializer.data)
 
-        # Extraire tous les élèves inscrits
-        pupils = [inscription.student for inscription in inscriptions]
+    def retrieve(self, request, pk=None):
+        """
+        Récupérer les détails d'un élève spécifique.
+        """
+        school = request.session.get('school')
+        pupil = get_object_or_404(
+            UserRegistration, school=school, user__id=pk, user__roles__name__iexact="Élève"
+        )
+        serializer = UserSerializer(pupil)
+        return Response(serializer.data)
 
-        # Récupérer et retourner les parents des élèves inscrits
-        parents = User.objects.filter(parents_of_pupils__in=pupils).distinct()
-        return parents
 
-class PupilsViewset(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+
+class ParentsViewSet(viewsets.ViewSet):
+    """
+    ViewSet pour gérer la liste et les détails des parents d'une école.
+    """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
     
+    def list(self, request):
+        """
+        Récupérer la liste des parents de l'école de l'utilisateur connecté.
+        """
+        school = request.session.get('school')  # Récupérer l'école en session
+        parents = UserRegistration.objects.filter(
+            school=school,
+            user__roles__name__iexact="Parent"
+        )
+        serializer = UserSerializer(parents, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        """
+        Récupérer les détails d'un parent spécifique.
+        """
+        school = request.session.get('school')
+        parent = get_object_or_404(
+            UserRegistration, school=school, user__id=pk, user__roles__name__iexact="Parent"
+        )
+        serializer = UserSerializer(parent)
+        return Response(serializer.data)
+
+
+class TeachersViewSet(viewsets.ViewSet):
+    """
+    ViewSet pour gérer la liste et les détails des enseignants d'une école.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def list(self, request):
+        """
+        Récupérer la liste des enseignants de l'école de l'utilisateur connecté.
+        """
+        school = request.session.get('school')  # Récupérer l'école en session
+        teachers = UserRegistration.objects.filter(
+            school=school,
+            user__roles__name__iexact="Enseignant"
+        )
+        serializer = UserSerializer(teachers, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, pk=None):
+        """
+        Récupérer les détails d'un enseignant spécifique.
+        """
+        school = request.session.get('school')
+        teacher = get_object_or_404(
+            UserRegistration, school=school, user__id=pk, user__roles__name__iexact="Enseignant"
+        )
+        serializer = UserSerializer(teacher)
+        return Response(serializer.data)
+
+
+
+class RegistrationPupilByMatricul(views.APIView):
+    """
+    Vue API pour créer un élève à partir de son matricule.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, matricule=None, classroom_id=None):
+        """
+        Créer un élève à partir de son matricule et l'affecter à une classe.
+        """
+        school = request.session.get('school')
+        
+        if not school:
+            return Response({"detail": "Aucune école associée à la session."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupération de l'utilisateur ou renvoi d'une erreur 404
+        user = get_object_or_404(User, matricule=matricule)
+
+        # Vérifier que l'utilisateur est bien un élève
+        if not user.roles.filter(name__iexact="Élève").exists():
+            return Response({"detail": "L'utilisateur n'est pas un élève."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupération de la classe
+        classroom = get_object_or_404(Classroom, id=classroom_id)
+
+        # Récupération de l'année scolaire actuelle
+        academic_year = SchoolYear.objects.filter(school=school, is_current_year=True).first()
+        if not academic_year:
+            return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Vérifier si l'élève est déjà inscrit
+        if UserRegistration.objects.filter(school=school, user=user, school_year=academic_year).exists():
+            return Response({"detail": "Élève déjà inscrit pour cette année scolaire."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Création et enregistrement de l'inscription
+        pupil_registered = UserRegistration(school=school, user=user, classroom=classroom, school_year=academic_year)
+        pupil_registered.save()
+
+        # Sérialisation et retour de la réponse
+        serializer = UserRegistrationSerializer(pupil_registered)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RegistrationParentByMatricul(views.APIView):
+    """
+    Vue API pour créer un parent à partir de son matricule.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, matricule=None, classroom_id=None):
+        """
+        Créer un parent à partir de son matricule et l'affecter à une classe.
+        """
+        school = request.session.get('school')
+        
+        if not school:
+            return Response({"detail": "Aucune école associée à la session."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupération de l'utilisateur ou renvoi d'une erreur 404
+        user = get_object_or_404(User, matricule=matricule)
+
+        # Vérifier que l'utilisateur est bien un parent
+        if not user.roles.filter(name__iexact="Parent").exists():
+            return Response({"detail": "L'utilisateur n'est pas un parent."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupération de l'année scolaire actuelle
+        academic_year = SchoolYear.objects.filter(school=school, is_current_year=True).first()
+        if not academic_year:
+            return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Vérifier si le parent est déjà inscrit
+        if UserRegistration.objects.filter(school=school, user=user, school_year=academic_year).exists():
+            return Response({"detail": "Le parent est déjà inscrit pour cette année scolaire."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Création et enregistrement de l'inscription
+        parent_registered = UserRegistration(school=school, user=user, school_year=academic_year)
+        parent_registered.save()
+
+        # Sérialisation et retour de la réponse
+        serializer = UserRegistrationSerializer(parent_registered)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RegistrationTeacherByMatricul(views.APIView):
+    """
+    Vue API pour créer un enseigant à partir de son matricule.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, matricule=None):
+        """
+        Créer un enseigant à partir de son matricule et l'affecter à une classe.
+        """
+        school = request.session.get('school')
+        
+        if not school:
+            return Response({"detail": "Aucune école associée à la session."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupération de l'utilisateur ou renvoi d'une erreur 404
+        user = get_object_or_404(User, matricule=matricule)
+
+        # Vérifier que l'utilisateur est bien un élève
+        if not user.roles.filter(name__iexact="Enseignant").exists():
+            return Response({"detail": "L'utilisateur n'est pas un enseignant."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        # Vérifier si l'enseigant est déjà inscrit
+        if UserRegistration.objects.filter(school=school, user=user).exists():
+            return Response({"detail": "L'enseignant est déjà inscrit dans cette école."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Création et enregistrement de l'inscription
+        teacher_registered = UserRegistration(school=school, user=user)
+        teacher_registered.save()
+
+        # Sérialisation et retour de la réponse
+        serializer = UserRegistrationSerializer(teacher_registered)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -106,7 +106,6 @@ class Classroom(models.Model):
 class UserRegistration(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     user = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Utilisateur")
-    
     school = models.ForeignKey("backend.School", on_delete=models.CASCADE, verbose_name="École", null=True, blank=True)
     school_year = models.ForeignKey("backend.SchoolYear", on_delete=models.CASCADE, verbose_name="Année scolaire", null=True, blank=True)
     classroom = models.ForeignKey("backend.Classroom", on_delete=models.CASCADE, verbose_name="Salle de classe", null=True, blank=True)
