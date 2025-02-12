@@ -109,3 +109,17 @@ class User(AbstractBaseUser, PermissionsMixin, CommonProfile):
 
 
 
+class AccessLog(models.Model):
+    """
+    Modèle pour journaliser les accès à l'API.
+    """
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    ip_address = models.GenericIPAddressField()
+    method = models.CharField(max_length=10)
+    path = models.TextField()
+    status_code = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    response_time = models.FloatField()  # Temps de réponse en secondes
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.user} - {self.method} {self.path} ({self.status_code})"
