@@ -6,7 +6,7 @@ from backend.models.account import User
 from api.serializers.account_serializer import PasswordResetConfirmSerializer, PasswordResetSerializer,  UserRoleSerializer, UserSerializer
 from rest_framework import status, views
 
-from backend.models.school_manager import StudentRegistration
+from backend.models.school_manager import UserRegistration
 from backend.permissions.permission_app import IsManager, IsDirector
 
 User = get_user_model()
@@ -165,7 +165,7 @@ class ParentsOfStudentsInSchoolViewSet(viewsets.ReadOnlyModelViewSet):
         user_school = self.request.user.school_code
 
         # Récupérer toutes les inscriptions pour cette école qui sont actives et concernent l'année scolaire en cours
-        inscriptions = StudentRegistration.objects.filter(
+        inscriptions = UserRegistration.objects.filter(
             classroom__school=user_school,
             is_active=True,
             school_year__is_current_year=True

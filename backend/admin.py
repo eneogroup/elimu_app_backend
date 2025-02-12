@@ -2,6 +2,7 @@ from django.contrib import admin
 from backend.models.account import *
 from backend.models.admin_manager import *
 from backend.models.school_manager import *
+from django.utils.html import format_html
 
 per_page = 20
 
@@ -98,7 +99,7 @@ class UserAdmin(admin.ModelAdmin):
         ('Information Compte Utilisateur', {'fields': ('roles', 'username', 'email', 'password',)}),
         ('Profil', {'fields': ('is_admin', 'is_active', 'photo',)}),
         ('Information Général', {
-            'fields': ('matricule','school_code', 'lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
+            'fields': ('matricule', 'lastname', 'firstname','nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',)}),
         ('Coordonnée Personnel', {
             'fields': ('phone', 'address',)}),
         ('Information Enseignant ou Parent', {
@@ -108,7 +109,7 @@ class UserAdmin(admin.ModelAdmin):
         ('Création et modification', {'fields': ('created_at', 'updated_at')}),
     )
     add_fieldsets = (
-        (None, {'fields': ('username', 'email', 'password1', 'password2', 'role', 'school_code')}),
+        (None, {'fields': ('username', 'email', 'password1', 'password2', 'role', )}),
     )
     list_per_page = per_page
     readonly_fields=('created_at', 'updated_at', 'matricule', 'id')
@@ -123,3 +124,58 @@ class UserAdmin(admin.ModelAdmin):
                 obj.set_password(form.cleaned_data['password'])
         
         super().save_model(request, obj, form, change)
+
+
+
+
+@admin.register(UserRegistration)
+class UserRegistrationAdmin(admin.ModelAdmin):
+    list_display = ("user", "school", "school_year", "classroom", "is_paid", "is_active", "status", "created_at")
+    list_filter = ("school", "school_year", "classroom", "is_paid", "is_active", "is_graduated", "is_transferred", "is_suspended")
+    search_fields = ("user__full_name", "school__name", "classroom__name", "school_year__year")
+    ordering = ("-created_at",)
+    autocomplete_fields = ("user", "school", "children")
+    readonly_fields = ("created_at", "updated_at")
+
+    fieldsets = (
+        ("Informations générales", {
+            "fields": ("user", "school", "school_year", "classroom")
+        }),
+        ("Statut de l'élève", {
+            "fields": ("is_paid", "is_active", "is_graduated", "is_transferred", "is_suspended", "is_withdrawn", "is_reinscribed"),
+            "classes": ("collapse",),  # Permet de replier cette section
+        }),
+        ("Enfants (pour les parents)", {
+            "fields": ("children",),
+            "classes": ("collapse",),
+        }),
+        ("Informations système", {
+            "fields": ("created_at", "updated_at"),
+            "classes": ("collapse",),
+        }),
+    )
+
+    def status(self, obj):
+        """Affiche un statut coloré pour voir rapidement l'état de l'inscription."""
+        if obj.is_withdrawn:
+            color = "gray"
+            text = "Retiré"
+        elif obj.is_transferred:
+            color = "orange"
+            text = "Transféré"
+        elif obj.is_suspended:
+            color = "red"
+            text = "Suspendu"
+        elif obj.is_graduated:
+            color = "green"
+            text = "Admis"
+        elif obj.is_paid:
+            color = "blue"
+            text = "Payé"
+        else:
+            color = "black"
+            text = "En cours"
+        return format_html(f'<span style="color: {color}; font-weight: bold;">{text}</span>')
+
+    status.short_description = "Statut"
+

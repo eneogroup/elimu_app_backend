@@ -101,13 +101,17 @@ class Classroom(models.Model):
         verbose_name_plural = "Salles de classes"
 
 
-class StudentRegistration(models.Model):
-    id = models.AutoField(primary_key=True, auto_created=True)
-    student = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Élève")
-    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, verbose_name="Année scolaire")
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name="Salle de classe")
 
-    # Statut
+
+class UserRegistration(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    user = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Utilisateur")
+    
+    school = models.ForeignKey("backend.School", on_delete=models.CASCADE, verbose_name="École", null=True, blank=True)
+    school_year = models.ForeignKey("backend.SchoolYear", on_delete=models.CASCADE, verbose_name="Année scolaire", null=True, blank=True)
+    classroom = models.ForeignKey("backend.Classroom", on_delete=models.CASCADE, verbose_name="Salle de classe", null=True, blank=True)
+    
+    # Champs spécifiques aux élèves
     is_paid = models.BooleanField(default=False, verbose_name="Payé")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     is_graduated = models.BooleanField(default=False, verbose_name="Élève admis(e)")
@@ -116,42 +120,45 @@ class StudentRegistration(models.Model):
     is_withdrawn = models.BooleanField(default=False, verbose_name="Élève retiré(e)")
     is_reinscribed = models.BooleanField(default=False, verbose_name="Élève réinscrit(e)")
 
+    # Champs spécifiques aux parents
+    children = models.ManyToManyField("backend.User", verbose_name="Enfants", blank=True, related_name="registered_parents")
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
 
     class Meta:
-        verbose_name = "Inscription"
-        verbose_name_plural = "Inscriptions"
-        unique_together = ('student', 'classroom', 'school_year')  # Un élève ne peut pas être inscrit plusieurs fois dans la même salle de classe pour la même année scolaire
+        verbose_name = "Inscription utilisateur"
+        verbose_name_plural = "Inscriptions utilisateurs"
+        unique_together = ('user', 'school_year', 'classroom')  # Un utilisateur ne peut pas s'inscrire plusieurs fois avec le même rôle pour une année et une classe
 
     def __str__(self):
-        return f"{self.student.firstname} {self.student.lastname} - {self.school_year.year}"
+        return f"{self.user.full_name if self.user.full_name else self.user.username} - {self.school_year.year if self.school_year else 'N/A'}"
 
     def clean(self):
-        existing_inscription = StudentRegistration.objects.filter(
-            student=self.student,
-            school_year=self.school_year,
-            classroom=self.classroom
+        # if not self.school_year or not self.classroom:
+        #     raise ValidationError("Un élève doit être inscrit à une année scolaire et une salle de classe.")
+        if not self.school:
+            raise ValidationError("Un enseignant doit être rattaché à une école.")
+
+        # Vérifier qu'un utilisateur ne s'inscrit pas deux fois avec le même rôle dans la même école/année/salle de classe
+        existing_registration = UserRegistration.objects.filter(
+            user=self.user, school_year=self.school_year, classroom=self.classroom
         ).exists()
 
-        if existing_inscription:
-            raise ValidationError("L'élève est déjà inscrit dans cette salle de classe pour l'année scolaire sélectionnée.")
+        if existing_registration:
+            raise ValidationError("L'utilisateur est déjà inscrit avec ce rôle pour cette année scolaire et salle de classe.")
 
         super().clean()
 
-
     def save(self, *args, **kwargs):
-        self.full_clean()  # Valide les données avant la sauvegarde
+        self.full_clean()
         super().save(*args, **kwargs)
-
-    def get_student_name(self):
-        return f"{self.student.firstname} {self.student.lastname}"
 
 
 class StudentEvaluation(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     student = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Élève")
-    inscription = models.ForeignKey(StudentRegistration, on_delete=models.CASCADE, verbose_name="Inscription")
+    inscription = models.ForeignKey(UserRegistration, on_delete=models.CASCADE, verbose_name="Inscription")
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, verbose_name="Année scolaire")
     subject = models.ForeignKey('Subject', on_delete=models.CASCADE, verbose_name="Matière")  # Ajuste le chemin selon ton modèle
     evaluation_date = models.DateField(verbose_name="Date de l'évaluation")
@@ -222,57 +229,3 @@ class SchoolAbsence(models.Model):
         
         return super().clean()
 
-
-class TeacherRegistration(models.Model):
-    id = models.AutoField(primary_key=True, auto_created=True)
-    teacher = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Enseignant")
-    school = models.ForeignKey("backend.School", on_delete=models.CASCADE, verbose_name="École")
-    is_active = models.BooleanField(default=True, verbose_name="Actif")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
-    
-    class Meta:
-        verbose_name = "Inscription d'enseignant"
-        verbose_name_plural = "Inscriptions d'enseignants"
-    
-    def __str__(self):
-        return f"{self.teacher.full_name} - {self.school_year.year}"
-    
-    def clean(self):
-        # Vérifie que la salle de classe existe
-        if not not School.objects.filter(id=self.school.id).exists():
-            raise ValidationError("L'école' n'existe pas.")
-        
-        return super().clean()
-    
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-
-class ParentRegistration(models.Model):
-    id = models.AutoField(primary_key=True, auto_created=True)
-    parent = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Parents", related_name="registered_children")
-    school = models.ForeignKey("backend.School", on_delete=models.CASCADE, verbose_name="École")
-    students = models.ManyToManyField("backend.User", verbose_name="Enfants", blank=True, related_name="registered_parents")
-    is_active = models.BooleanField(default=True, verbose_name="Actif")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
-    
-    class Meta:
-        verbose_name = "Inscription du parent"
-        verbose_name_plural = "Inscriptions des parents"
-    
-    def __str__(self):
-        return f"{self.parent.full_name} - {self.school.name}"
-    
-    def clean(self):
-        # Vérifie que l'école existe
-        if not self.school:
-            raise ValidationError("L'école' n'existe pas.")
-        
-        return super().clean()
-    
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)

@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
 from backend.models.account import User
-from backend.models.school_manager import StudentRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from backend.permissions.permission_app import IsDirector, IsManager
 from rest_framework.decorators import action
@@ -25,14 +25,14 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
         total_teachers = User.objects.filter(school_code=school_code).count()
         
         # Nombre total des élèves inscrits dans l'année scolaire active
-        total_pupils = StudentRegistration.objects.filter(
+        total_pupils = UserRegistration.objects.filter(
             classroom__school=school_code,
             is_active=True,
             school_year__is_current_year=True
         ).count()
         
         # Extraire tous les élèves inscrits
-        inscriptions = StudentRegistration.objects.filter(
+        inscriptions = UserRegistration.objects.filter(
             classroom__school=school_code, 
             is_active=True, 
             school_year__is_current_year=True
@@ -127,7 +127,7 @@ class InscriptionViewSet(viewsets.ModelViewSet):
     serializer_class = InscriptionSerializer
 
     def get_queryset(self):
-        return StudentRegistration.objects.filter(classroom__school=self.request.user.school_code)
+        return UserRegistration.objects.filter(classroom__school=self.request.user.school_code)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -194,7 +194,7 @@ class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
             return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_404_NOT_FOUND)
 
         # Récupérer les inscriptions des élèves pour l'année scolaire active
-        inscriptions = StudentRegistration.objects.filter(school_year=active_school_year, classroom__school=school_code)
+        inscriptions = UserRegistration.objects.filter(school_year=active_school_year, classroom__school=school_code)
 
         # Sérialiser les données des inscriptions
         serializer = InscriptionSerializer(inscriptions, many=True)

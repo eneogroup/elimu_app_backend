@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.models.school_manager import StudentRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class InscriptionSerializer(serializers.ModelSerializer):
     #student = PupilSerializer(read_only=True)
     class Meta:
-        model = StudentRegistration
+        model = UserRegistration
         fields = '__all__'  # Incluez tous les champs ou spécifiez ceux que vous voulez exposer
 
     # def validate(self, attrs):

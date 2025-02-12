@@ -70,7 +70,6 @@ class User(AbstractBaseUser, PermissionsMixin, CommonProfile):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
     roles = models.ManyToManyField(UserRole, verbose_name="Rôles", blank=True)
-    school_code = models.ManyToManyField(School, verbose_name="École actuelle",  blank=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
