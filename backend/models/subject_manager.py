@@ -1,7 +1,6 @@
 from datetime import date
 from django.db import models
 from django.forms import ValidationError
-from backend.models.account import TeacherSchool
 from backend.models.admin_manager import SubjectGroup
 from backend.models.school_manager import Classroom, School, SchoolYear
 
@@ -34,7 +33,7 @@ class SchoolSchedule(models.Model):
     end_time = models.TimeField(verbose_name="Heure de fin")
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name="Salle de classe")
     school = models.ForeignKey(School, on_delete=models.SET_NULL, verbose_name="École",null=True)
-    teacher = models.ForeignKey(TeacherSchool, on_delete=models.CASCADE, verbose_name="Professeur")
+    teacher = models.ForeignKey('backend.User', on_delete=models.CASCADE, verbose_name="Professeur")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -164,7 +163,7 @@ class SchoolProgram(models.Model):
 
 class SchoolReportCard(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, verbose_name="Élève")
+    student = models.ForeignKey('backend.User', on_delete=models.CASCADE, verbose_name="Élève")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
     grade = models.CharField(max_length=5, verbose_name="Grade")
     school = models.ForeignKey(School, on_delete=models.CASCADE, verbose_name="École",null=True)
@@ -307,7 +306,7 @@ class SchoolReportCard(models.Model):
 
 class SubjectAttribution(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    teacher = models.ForeignKey('backend.TeacherSchool', on_delete=models.CASCADE, verbose_name="Professeur")
+    teacher = models.ForeignKey('backend.User', on_delete=models.CASCADE, verbose_name="Professeur")
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Matière")
     classroom = models.ForeignKey('backend.Classroom', on_delete=models.CASCADE, verbose_name="Salle de classe")
     school_year = models.ForeignKey('backend.SchoolYear', on_delete=models.CASCADE, verbose_name="Année scolaire")

@@ -14,7 +14,7 @@ import os
 
 class SchoolInvoice(models.Model):
     invoice_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    student = models.ForeignKey('backend.Pupil', on_delete=models.CASCADE, related_name='Élève')
+    student = models.ForeignKey('backend.User', on_delete=models.CASCADE, related_name='Élève')
     school = models.ForeignKey('backend.School', on_delete=models.CASCADE, related_name='École',null=True)
     classroom = models.ForeignKey('backend.Classroom', on_delete=models.CASCADE, verbose_name="Salle de classe")
     date = models.DateField(verbose_name='Date de facturation')

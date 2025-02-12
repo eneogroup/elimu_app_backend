@@ -2,11 +2,11 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from backend.models.account import ParentOfStudent, Pupil, TeacherSchool, User
-from api.serializers.account_serializer import ParentOfStudentSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, PupilSerializer, TeacherSerializer, UserRoleSerializer, UserSerializer
+from backend.models.account import User
+from api.serializers.account_serializer import PasswordResetConfirmSerializer, PasswordResetSerializer,  UserRoleSerializer, UserSerializer
 from rest_framework import status, views
 
-from backend.models.school_manager import Inscription
+from backend.models.school_manager import StudentRegistration
 from backend.permissions.permission_app import IsManager, IsDirector
 
 User = get_user_model()
@@ -113,11 +113,11 @@ class PasswordResetConfirmView(views.APIView):
 
 class TeacherSchoolViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = TeacherSerializer
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         # Filtrer les enseignants par l'école de l'utilisateur connecté
-        return TeacherSchool.objects.filter(school_code=self.request.user.school_code)
+        return User.objects.filter(school_code=self.request.user.school_code)
 
     def perform_create(self, serializer):
         # Associer l'enseignant à l'école de l'utilisateur connecté
@@ -146,9 +146,9 @@ class ParentOfStudentViewSet(viewsets.ModelViewSet):
     """
     ViewSet qui retourne les parents des élèves.
     """
-    queryset = ParentOfStudent.objects.all()
+    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ParentOfStudentSerializer
+    serializer_class = UserSerializer
 
 
 
@@ -158,14 +158,14 @@ class ParentsOfStudentsInSchoolViewSet(viewsets.ReadOnlyModelViewSet):
     ViewSet qui retourne les parents des élèves inscrits dans l'école de l'utilisateur connecté.
     """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ParentOfStudentSerializer
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         # Supposons que l'utilisateur connecté soit lié à une école via un attribut `school_code`
         user_school = self.request.user.school_code
 
         # Récupérer toutes les inscriptions pour cette école qui sont actives et concernent l'année scolaire en cours
-        inscriptions = Inscription.objects.filter(
+        inscriptions = StudentRegistration.objects.filter(
             classroom__school=user_school,
             is_active=True,
             school_year__is_current_year=True
@@ -175,11 +175,11 @@ class ParentsOfStudentsInSchoolViewSet(viewsets.ReadOnlyModelViewSet):
         pupils = [inscription.student for inscription in inscriptions]
 
         # Récupérer et retourner les parents des élèves inscrits
-        parents = ParentOfStudent.objects.filter(parents_of_pupils__in=pupils).distinct()
+        parents = User.objects.filter(parents_of_pupils__in=pupils).distinct()
         return parents
 
 class PupilsViewset(viewsets.ModelViewSet):
-    queryset = Pupil.objects.all()
+    queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = PupilSerializer
+    serializer_class = UserSerializer
     

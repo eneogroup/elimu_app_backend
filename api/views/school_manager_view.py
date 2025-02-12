@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
-from backend.models.account import ParentOfStudent, TeacherSchool
-from backend.models.school_manager import Inscription, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from backend.models.account import User
+from backend.models.school_manager import StudentRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from backend.permissions.permission_app import IsDirector, IsManager
 from rest_framework.decorators import action
@@ -22,17 +22,17 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
         school_code = user.school_code
         
         # Nombre total des enseignants dans l'école de l'utilisateur connecté
-        total_teachers = TeacherSchool.objects.filter(school_code=school_code).count()
+        total_teachers = User.objects.filter(school_code=school_code).count()
         
         # Nombre total des élèves inscrits dans l'année scolaire active
-        total_pupils = Inscription.objects.filter(
+        total_pupils = StudentRegistration.objects.filter(
             classroom__school=school_code,
             is_active=True,
             school_year__is_current_year=True
         ).count()
         
         # Extraire tous les élèves inscrits
-        inscriptions = Inscription.objects.filter(
+        inscriptions = StudentRegistration.objects.filter(
             classroom__school=school_code, 
             is_active=True, 
             school_year__is_current_year=True
@@ -40,7 +40,7 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
         pupils = [inscription.student for inscription in inscriptions]
 
         # Récupérer tous les parents des élèves inscrits
-        parents = ParentOfStudent.objects.filter(parents_of_pupils__in=pupils).distinct()
+        parents = User.objects.filter(parents_of_pupils__in=pupils).distinct()
 
         # Retourner les données dans la réponse
         return Response({
@@ -127,7 +127,7 @@ class InscriptionViewSet(viewsets.ModelViewSet):
     serializer_class = InscriptionSerializer
 
     def get_queryset(self):
-        return Inscription.objects.filter(classroom__school=self.request.user.school_code)
+        return StudentRegistration.objects.filter(classroom__school=self.request.user.school_code)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -194,7 +194,7 @@ class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
             return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_404_NOT_FOUND)
 
         # Récupérer les inscriptions des élèves pour l'année scolaire active
-        inscriptions = Inscription.objects.filter(school_year=active_school_year, classroom__school=school_code)
+        inscriptions = StudentRegistration.objects.filter(school_year=active_school_year, classroom__school=school_code)
 
         # Sérialiser les données des inscriptions
         serializer = InscriptionSerializer(inscriptions, many=True)
