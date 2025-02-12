@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'password', 'role', 'role_name', 'is_active', 'photo',
+            'id', 'username', 'email', 'password', 'roles', 'role_name', 'is_active', 'photo',
             'matricule', 'lastname', 'firstname', 'nickname', 'gender', 'nationality', 'birthplace', 'date_of_birth',
             'phone', 'address', 'phone_work', 'profession', 'hire_date', 'is_principal', 'is_assistant',
             'skype', 'gmail', 'discord', 'facebook', 'linkedin', 'instagram', 'twitter', 'whatsapp',
