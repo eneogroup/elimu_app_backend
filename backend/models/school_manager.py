@@ -101,8 +101,6 @@ class Classroom(models.Model):
         verbose_name_plural = "Salles de classes"
 
 
-
-
 class UserRegistration(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     user = models.ForeignKey("backend.User", on_delete=models.CASCADE, verbose_name="Utilisateur")
@@ -228,3 +226,36 @@ class SchoolAbsence(models.Model):
         
         return super().clean()
 
+class SchoolGeneralConfig(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
+    school = models.OneToOneField(School, on_delete=models.CASCADE, verbose_name="École")
+    academic_year = models.ForeignKey(SchoolYear, on_delete=models.SET_NULL, verbose_name="Année scolaire", blank=True, null=True)
+    start_date = models.DateField(verbose_name="Date de début de l'année scolaire")
+    end_date = models.DateField(verbose_name="Date de fin de l'année scolaire")
+    holidays = models.TextField(verbose_name="Jours fériés", blank=True, null=True)
+    vacation_periods = models.TextField(verbose_name="Périodes de vacances", blank=True, null=True)
+    registration_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais d'inscription", blank=True, null=True)
+    re_registration_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais de réinscription", blank=True, null=True)
+    badges_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais de macaron", blank=True, null=True)
+    tuition_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais de scolarité", blank=True, null=True)
+    transportation_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais de transport", blank=True, null=True)
+    food_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais de nourriture", blank=True, null=True)
+    uniform_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais d'uniforme", blank=True, null=True)
+    additional_fees = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Frais supplémentaires", blank=True, null=True)
+    opening_hours = models.CharField(max_length=255, verbose_name="Heures d'ouverture", blank=True, null=True)
+    closing_hours = models.CharField(max_length=255, verbose_name="Heures de fermeture", blank=True, null=True)
+    admission_requirements = models.TextField(verbose_name="Conditions d'admission", blank=True, null=True)
+    application_deadline = models.DateField(verbose_name="Date limite d'inscription", blank=True, null=True)
+    payment_methods = models.CharField(max_length=255, verbose_name="Modes de paiement acceptés", blank=True, null=True)
+    grading_system = models.CharField(max_length=255, verbose_name="Système de notation", blank=True, null=True)
+    contact_email = models.EmailField(verbose_name="Email de contact", max_length=255, blank=True, null=True)
+    contact_phone = models.CharField(max_length=20, verbose_name="Téléphone de contact", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Modifié le")
+
+    def __str__(self):
+        return f"Configuration générale de {self.school.name}"
+
+    class Meta:
+        verbose_name = "Configuration générale de l'école"
+        verbose_name_plural = "Configurations générales des écoles"

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from backend.models.account import User
-from backend.models.school_manager import School, UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from backend.models.school_manager import School, SchoolGeneralConfig, UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):
@@ -99,3 +99,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("L'utilisateur est déjà inscrit avec ce rôle pour cette année scolaire et salle de classe.")
 
         return data
+
+
+class SchoolGeneralConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolGeneralConfig
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']

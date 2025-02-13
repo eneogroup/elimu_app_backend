@@ -9,12 +9,13 @@ from api.views.library_view import EbookViewSet, MaterialRequestViewSet, SchoolM
 from api.views.subject_manager_view import SchoolCalendarViewSet, SchoolHolidayViewSet, SchoolProgramViewSet, SchoolReportCardViewSet, SchoolScheduleViewSet, SubjectAttributionViewSet, SubjectViewSet
 from .views.admin_manager_views import *
 from .views.school_manager_view import (
-    ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
+    ActiveSchoolYearStudentsViewSet, ActiveSchoolYearViewSet, InscriptionViewSet, SchoolAbsenceViewSet, SchoolGeneralConfigViewSet, SchoolStatisticsViewSet, SchoolYearViewSet, ClassroomViewSet, StudentEvaluationViewSet
 )
 
 router = DefaultRouter()
 
 # URL FOR ADMIN & MANAGER
+router.register(r'school-general-config', SchoolGeneralConfigViewSet, basename='school-general-config')
 router.register(r'academic-year-of-school', SchoolYearViewSet, basename='academic-year-of-school')
 router.register(r'current-school-year', ActiveSchoolYearViewSet, basename='current-school-year')
 router.register(r'parent-of-students', ParentsViewSet, basename='parent-of-students')
@@ -25,17 +26,17 @@ router.register(r'subject-attribution', SubjectAttributionViewSet, basename='sub
 # router.register(r'school-calendar', SchoolCalendarViewSet, basename='school-calendar')
 # router.register(r'school-holiday', SchoolHolidayViewSet, basename='school-holiday')
 # router.register(r'school-program', SchoolProgramViewSet, basename='school-program')
-router.register(r'schedule-of-school', SchoolScheduleViewSet, basename='schedule-of-school')
+router.register(r'schedules-of-school', SchoolScheduleViewSet, basename='schedules-of-school')
 # router.register(r'school-report-card', SchoolReportCardViewSet, basename='school-report-card')
-router.register(r'classroom-of-school', ClassroomViewSet, basename='classroom-of-school')
+router.register(r'classrooms-of-school', ClassroomViewSet, basename='classrooms-of-school')
 router.register(r'inscription-of-students', InscriptionViewSet, basename='inscription-of-students')
 router.register(r'active-students-of-school', ActiveSchoolYearStudentsViewSet, basename='active-students-of-school')
 # router.register(r'school-absence', SchoolAbsenceViewSet, basename='school-absence')
-router.register(r'student-evaluation', StudentEvaluationViewSet, basename='student-evaluation')
+router.register(r'students-evaluation', StudentEvaluationViewSet, basename='students-evaluation')
 router.register(r'school-statistics', SchoolStatisticsViewSet, basename='school-statistics')
 # router.register(r'expense-category', ExpenseCategoryViewSet, basename='expense-category')
 # router.register(r'school-expense', SchoolExpenseViewSet, basename='school-expense')
-router.register(r'school-invoice', SchoolInvoiceViewSet, basename='school-invoice')
+router.register(r'school-invoices', SchoolInvoiceViewSet, basename='school-invoices')
 # router.register(r'school-payment-tracking', SchoolPaymentTrackingViewSet, basename='school-payment-tracking')
 # router.register(r'ebook-of-school', EbookViewSet, basename='ebook-of-school')
 # router.register(r'material-request', MaterialRequestViewSet, basename='material-request')

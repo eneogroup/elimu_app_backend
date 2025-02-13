@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from backend.constant import get_user_school
-from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
-from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
+from backend.models.school_manager import SchoolGeneralConfig, UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolGeneralConfigSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from backend.permissions.permission_app import IsDirector, IsManager
 from rest_framework.decorators import action
 
@@ -229,3 +229,33 @@ class SchoolAbsenceViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SchoolGeneralConfigViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet pour gérer les configurations générales de l'école.
+    """
+    queryset = SchoolGeneralConfig.objects.all()
+    serializer_class = SchoolGeneralConfigSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Filtrer les configurations par l'école de l'utilisateur connecté.
+        """
+        school = get_user_school(self.request)
+        return SchoolGeneralConfig.objects.filter(school=school)
+
+    def perform_create(self, serializer):
+        """
+        Associer la configuration à l'école de l'utilisateur connecté lors de la création.
+        """
+        school = get_user_school(self.request)
+        serializer.save(school=school)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.school!=get_user_school(request):
+            return Response({"detail": "Vous ne pouvez pas modifier cette configuration."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+    
