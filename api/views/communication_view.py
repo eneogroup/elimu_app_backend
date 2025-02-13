@@ -3,8 +3,10 @@ from rest_framework import status
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from api.serializers.communication_serializer import AnnouncementSerializer, CreateMessageSerializer, EventSerializer, InformationSerializer, MessageSerializer, ReplyMessageSerializer, TagSerializer
+from backend.constant import get_user_school
 from backend.models.admin_manager import Tag
 from backend.models.communication_manager import Announcement, Event, Information, Message
+from django.core.exceptions import ObjectDoesNotExist
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -23,11 +25,13 @@ class InformationViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         # Filtrer les informations par l'école de l'utilisateur connecté
-        return Information.objects.filter(school=self.request.user.school_code)
+        return Information.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
-        # Associer l'information à l'école de l'utilisateur connecté
-        serializer.save(school=self.request.user.school_code)
+        school = get_user_school(self.request)
+        if not school:
+            return Response({"detail": "École non trouvée."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save(school=school)
     
     def create(self, request, *args, **kwargs):
         # Personnaliser la création pour inclure l'école de l'utilisateur
@@ -36,13 +40,13 @@ class InformationViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.school != request.user.school_code:
-            return Response({"detail": "Vous ne pouvez pas modifier cet Information."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Vous ne pouvez pas modifier cette Information."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.school != request.user.school_code:
-            return Response({"detail": "Vous ne pouvez pas supprimer cet v."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Vous ne pouvez pas supprimer cette Information."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -53,11 +57,11 @@ class EventViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         # Filtrer les événements par l'école de l'utilisateur connecté
-        return Event.objects.filter(school=self.request.user.school_code)
+        return Event.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
         # Associer l'événement à l'école de l'utilisateur connecté
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def create(self, request, *args, **kwargs):
         # Personnaliser la création pour inclure l'école de l'utilisateur
@@ -72,7 +76,7 @@ class EventViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.school != request.user.school_code:
-            return Response({"detail": "Vous ne pouvez pas supprimer cet événement."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Vous ne pouvez pas supprimer cet Événement."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
 
@@ -84,11 +88,11 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         # Filtrer les annonces par l'école de l'utilisateur connecté
-        return Announcement.objects.filter(school=self.request.user.school_code)
+        return Announcement.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
         # Associer l'annonce à l'école de l'utilisateur connecté
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def create(self, request, *args, **kwargs):
         # Personnaliser la création pour inclure l'école de l'utilisateur
@@ -160,6 +164,6 @@ class MessageViewSet(viewsets.ModelViewSet):
     def delete_message(self, request, pk=None):
         """Supprime un message."""
         message = self.get_object()
-        message.delete_message()
+        message.delete()
         return Response({'status': 'Message supprimé'}, status=status.HTTP_204_NO_CONTENT)
 

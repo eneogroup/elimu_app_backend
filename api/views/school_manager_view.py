@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
+from backend.constant import get_user_school
 from backend.models.account import User
 from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
@@ -56,11 +57,11 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Filtrer les années scolaires de l'école de l'utilisateur connecté
-        return SchoolYear.objects.filter(school=self.request.user.school_code)
+        return SchoolYear.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
         # Associer l'année scolaire à l'école de l'utilisateur connecté
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -104,11 +105,11 @@ class ClassroomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Filtrer les salles de classe par l'école de l'utilisateur connecté
-        return Classroom.objects.filter(school=self.request.user.school_code)
+        return Classroom.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
         # Associer la salle de classe à l'école de l'utilisateur connecté
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -127,7 +128,7 @@ class InscriptionViewSet(viewsets.ModelViewSet):
     serializer_class = InscriptionSerializer
 
     def get_queryset(self):
-        return UserRegistration.objects.filter(classroom__school=self.request.user.school_code)
+        return UserRegistration.objects.filter(classroom__school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -159,7 +160,7 @@ class StudentEvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = StudentEvaluationSerializer
 
     def get_queryset(self):
-        return StudentEvaluation.objects.filter(inscription__classroom__school=self.request.user.school_code)
+        return StudentEvaluation.objects.filter(inscription__classroom__school=get_user_school(self.request))
 
 
     def update(self, request, *args, **kwargs):
@@ -209,7 +210,7 @@ class SchoolAbsenceViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
     
     def get_queryset(self):
-        return SchoolAbsence.objects.filter(classroom__school=self.request.user.school_code)
+        return SchoolAbsence.objects.filter(classroom__school=get_user_school(self.request))
 
 
     def create(self, request, *args, **kwargs):

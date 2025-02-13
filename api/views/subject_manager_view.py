@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from api.serializers.subject_manager_serializer import SchoolCalendarSerializer, SchoolHolidaySerializer, SchoolProgramSerializer, SchoolReportCardSerializer, SchoolScheduleSerializer, SubjectAttributionSerializer, SubjectSerializer
+from backend.constant import get_user_school
 from backend.models.subject_manager import SchoolCalendar, SchoolHoliday, SchoolProgram, SchoolReportCard, SchoolSchedule, Subject, SubjectAttribution
 from backend.permissions.permission_app import IsDirector, IsManager
 from rest_framework.decorators import action
@@ -14,10 +15,10 @@ class SubjectViewSet(viewsets.ModelViewSet):
     serializer_class = SubjectSerializer
 
     def get_queryset(self):
-        return Subject.objects.filter(school=self.request.user.school_code)
+        return Subject.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -44,10 +45,10 @@ class SchoolScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolScheduleSerializer
 
     def get_queryset(self):
-        return SchoolSchedule.objects.filter(school=self.request.user.school_code)
+        return SchoolSchedule.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -73,10 +74,10 @@ class SchoolCalendarViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolCalendarSerializer
 
     def get_queryset(self):
-        return SchoolCalendar.objects.filter(school=self.request.user.school_code)
+        return SchoolCalendar.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -105,7 +106,7 @@ class SchoolHolidayViewSet(viewsets.ModelViewSet):
         return SchoolHoliday.objects.filter(school=self.request.user.teacherschool.school_code)
 
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -132,10 +133,10 @@ class SchoolProgramViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolProgramSerializer
 
     def get_queryset(self):
-        return SchoolProgram.objects.filter(school=self.request.user.school_code)
+        return SchoolProgram.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -162,7 +163,7 @@ class SubjectAttributionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return SubjectAttribution.objects.filter(subject__school=self.request.user.school_code)
+        return SubjectAttribution.objects.filter(subject__school=get_user_school(self.request))
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -212,13 +213,13 @@ class SchoolReportCardViewSet(viewsets.ModelViewSet):
     
     
     def get_queryset(self):
-        return SchoolReportCard.objects.filter(school=self.request.user.school_code)
+        return SchoolReportCard.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def perform_update(self, serializer):
-        return serializer.save(school=self.request.user.school_code)
+        return serializer.save(school=get_user_school(self.request))
     
     def perform_destroy(self, instance):
         instance.delete()

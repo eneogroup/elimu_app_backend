@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 days_of_the_weeks = [
     ('lundi', 'Lundi'),
     ('mardi', 'Mardi'),
@@ -123,3 +124,10 @@ types_evaluations = [
     ('Devoir de classe', 'Devoir de classe'),
     ('Examen', 'Examen')
 ]
+
+
+def get_user_school(request):
+    school = request.session.get('school')
+    if not school:
+        raise ValidationError({"detail": "École non trouvée."})
+    return school

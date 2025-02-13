@@ -5,6 +5,7 @@ from django.db.models import Sum
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from api.serializers.facturation_serializer import ExpenseCategorySerializer, PaymentTrackingSerializer, SchoolExpenseSerializer, SchoolInvoiceSerializer
+from backend.constant import get_user_school
 from backend.models.facturation import ExpenseCategory, PaymentTracking, SchoolExpense, SchoolInvoice
 from backend.permissions.permission_app import IsDirector, IsManager
 
@@ -38,11 +39,11 @@ class SchoolInvoiceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Récupère toutes les factures de l'école de l'utilisateur connecté (ou un filtre personnalisé)."""
-        return SchoolInvoice.objects.filter(school=self.request.user.school_code)
+        return SchoolInvoice.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
         """Créer une nouvelle facture avec les informations fournies par l'utilisateur."""
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -109,11 +110,11 @@ class SchoolExpenseViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Récupère les frais de scolarité de l'école de l'utilisateur connecté (ou un filtre personnalisé)."""
-        return SchoolExpense.objects.filter(school=self.request.user.school_code)
+        return SchoolExpense.objects.filter(school=get_user_school(self.request))
     
     def perform_create(self, serializer):
         """Ajouter l'école de l'utilisateur connecté à la frais de scolarité."""
-        serializer.save(school=self.request.user.school_code)
+        serializer.save(school=get_user_school(self.request))
     
     def create(self, request, *args, **kwargs):
         """Personnaliser la création pour inclure l'école de l'utilisateur."""
