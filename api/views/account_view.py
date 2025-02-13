@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from api.serializers.school_manager_serializer import UserRegistrationSerializer
 from backend.models.account import User
 from api.serializers.account_serializer import PasswordResetConfirmSerializer, PasswordResetSerializer,  UserRoleSerializer, UserSerializer
 from rest_framework import status, views

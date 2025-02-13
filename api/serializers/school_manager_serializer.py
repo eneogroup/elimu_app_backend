@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
+from backend.models.account import User
+from backend.models.school_manager import School, UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 
 
 class SchoolYearSerializer(serializers.ModelSerializer):
@@ -70,3 +71,31 @@ class SchoolAbsenceSerializer(serializers.ModelSerializer):
         model = SchoolAbsence
         fields = '__all__'
 
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    school = serializers.PrimaryKeyRelatedField(queryset=School.objects.all())
+    school_year = serializers.PrimaryKeyRelatedField(queryset=SchoolYear.objects.all())
+    classroom = serializers.PrimaryKeyRelatedField(queryset=Classroom.objects.all())
+    children = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
+
+    class Meta:
+        model = UserRegistration
+        fields = [
+            'id', 'user', 'school', 'school_year', 'classroom', 'is_paid', 'is_active', 'is_graduated', 
+            'is_transferred', 'is_suspended', 'is_withdrawn', 'is_reinscribed', 'children', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+    def validate(self, data):
+        """
+        Vérifie que l'utilisateur n'est pas déjà inscrit avec le même rôle pour la même année scolaire et salle de classe.
+        """
+        user = data.get('user')
+        school_year = data.get('school_year')
+        classroom = data.get('classroom')
+
+        if UserRegistration.objects.filter(user=user, school_year=school_year, classroom=classroom).exists():
+            raise serializers.ValidationError("L'utilisateur est déjà inscrit avec ce rôle pour cette année scolaire et salle de classe.")
+
+        return data
