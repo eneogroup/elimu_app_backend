@@ -167,13 +167,13 @@ class StudentEvaluationViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.inscription.classroom.school != request.user.teacherschool.school_code:
+        if instance.inscription.classroom.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette évaluation."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.inscription.classroom.school != request.user.teacherschool.school_code:
+        if instance.inscription.classroom.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette évaluation."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
