@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from api.serializers.school_manager_serializer import UserRegistrationSerializer
+from backend.constant import get_user_school
 from backend.models.account import User
 from api.serializers.account_serializer import PasswordResetConfirmSerializer, PasswordResetSerializer,  UserRoleSerializer, UserSerializer
 from rest_framework import status, views
@@ -22,6 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsManager,IsDirector]
 
 
+
 class CurrentUserViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -32,6 +34,7 @@ class CurrentUserViewSet(viewsets.ViewSet):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 class PasswordResetView(views.APIView):
     """
@@ -267,3 +270,17 @@ class RegistrationTeacherByMatricul(views.APIView):
         # Sérialisation et retour de la réponse
         serializer = UserRegistrationSerializer(teacher_registered)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+"""
+   #Rest des vues à ajourter pour ce fichier
+        [
+            Vue API pour créer un élève à partir de ses informations.
+            Vue API pour créer un parent à partir de ses informations.
+            Vue API pour créer un enseignant à partir de ses informations.
+            Vue API pour créer un utilisateur de rôle spécifique(gestionnaire, comptable, etc...)
+            Vue API pour modifier les informations d'un utilisateur.
+        ]
+"""
