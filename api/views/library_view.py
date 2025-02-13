@@ -8,6 +8,23 @@ from backend.permissions.permission_app import IsDirector, IsManager
 
 
 class EbookViewSet(viewsets.ModelViewSet):
+    """
+    EbookViewSet is a viewset for handling CRUD operations on Ebook objects. It ensures that the operations are restricted to the school of the authenticated user.
+    Attributes:
+        serializer_class (EbookSerializer): The serializer class used for Ebook objects.
+        permission_classes (list): List of permission classes that the user must pass to access the viewset.
+    Methods:
+        get_queryset(self):
+            Returns a queryset of Ebook objects filtered by the school of the authenticated user.
+        perform_create(self, serializer):
+            Associates the created Ebook with the school of the authenticated user.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the school of the authenticated user.
+        update(self, request, *args, **kwargs):
+            Updates an Ebook object if it belongs to the school of the authenticated user. Returns a 403 Forbidden response if the user tries to update an Ebook from a different school.
+        destroy(self, request, *args, **kwargs):
+            Deletes an Ebook object if it belongs to the school of the authenticated user. Returns a 403 Forbidden response if the user tries to delete an Ebook from a different school.
+    """
     serializer_class = EbookSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -37,6 +54,30 @@ class EbookViewSet(viewsets.ModelViewSet):
 
 
 class SchoolMaterialViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing school materials.
+    This ViewSet provides the following actions:
+    - list: Retrieve a list of school materials associated with the user's school.
+    - retrieve: Retrieve a specific school material.
+    - create: Create a new school material and associate it with the user's school.
+    - update: Update an existing school material if it belongs to the user's school.
+    - partial_update: Partially update an existing school material if it belongs to the user's school.
+    - destroy: Delete an existing school material if it belongs to the user's school.
+    Attributes:
+        serializer_class (SchoolMaterialSerializer): The serializer class used for serializing and deserializing school materials.
+        permission_classes (list): The list of permission classes that determine access control for the viewset.
+    Methods:
+        get_queryset(self):
+            Returns the queryset of school materials filtered by the user's school.
+        perform_create(self, serializer):
+            Associates the new school material with the user's school before saving.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the user's school.
+        update(self, request, *args, **kwargs):
+            Updates an existing school material if it belongs to the user's school.
+        destroy(self, request, *args, **kwargs):
+            Deletes an existing school material if it belongs to the user's school.
+    """
     serializer_class = SchoolMaterialSerializer
     permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
     
@@ -66,6 +107,23 @@ class SchoolMaterialViewSet(viewsets.ModelViewSet):
 
 
 class MaterialRequestViewSet(viewsets.ModelViewSet):
+    """
+    MaterialRequestViewSet is a viewset for handling material requests in the application.
+    Attributes:
+        serializer_class (MaterialRequestSerializer): The serializer class used for material requests.
+        permission_classes (list): The list of permission classes required to access this viewset.
+    Methods:
+        get_queryset(self):
+            Returns the queryset of material requests filtered by the school of the logged-in user.
+        perform_create(self, serializer):
+            Associates the material request with the school of the logged-in user and saves the serializer.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the school of the logged-in user.
+        update(self, request, *args, **kwargs):
+            Updates a material request if it belongs to the school of the logged-in user. Returns a 403 Forbidden response if the user is not allowed to update the request.
+        destroy(self, request, *args, **kwargs):
+            Deletes a material request if it belongs to the school of the logged-in user. Returns a 403 Forbidden response if the user is not allowed to delete the request.
+    """
     serializer_class = MaterialRequestSerializer
     permission_classes = [permissions.IsAuthenticated, IsManager, IsDirector]
     

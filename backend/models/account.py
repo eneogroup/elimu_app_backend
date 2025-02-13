@@ -108,7 +108,6 @@ class User(AbstractBaseUser, PermissionsMixin, CommonProfile):
 
 
 
-
 class AccessLog(models.Model):
     """
     Modèle pour journaliser les accès à l'API.

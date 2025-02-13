@@ -1,8 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, permissions, status, views
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from backend.constant import get_user_school
-from backend.models.account import User
 from backend.models.school_manager import UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 from api.serializers.school_manager_serializer import InscriptionSerializer, SchoolAbsenceSerializer, SchoolYearSerializer, ClassroomSerializer, StudentEvaluationSerializer
 from backend.permissions.permission_app import IsDirector, IsManager
@@ -18,37 +17,30 @@ class SchoolStatisticsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'], url_path='statistics')
     def get_statistics(self, request):
-        user = request.user
-        
+ 
         # Filtrer par l'école de l'utilisateur connecté
-        school_code = user.school_code
+        school = get_user_school(request)
         
         # Nombre total des enseignants dans l'école de l'utilisateur connecté
-        total_teachers = User.objects.filter(school_code=school_code).count()
+        total_teachers = UserRegistration.objects.filter(school=school, user__roles__name__iexact="Enseignant").count()
         
         # Nombre total des élèves inscrits dans l'année scolaire active
         total_pupils = UserRegistration.objects.filter(
-            classroom__school=school_code,
+            school=school,
+            classroom__school=school,
             is_active=True,
-            school_year__is_current_year=True
+            school_year__is_current_year=True,
+            user__roles__name__iexact="Élève"
         ).count()
-        
-        # Extraire tous les élèves inscrits
-        inscriptions = UserRegistration.objects.filter(
-            classroom__school=school_code, 
-            is_active=True, 
-            school_year__is_current_year=True
-        )
-        pupils = [inscription.student for inscription in inscriptions]
 
         # Récupérer tous les parents des élèves inscrits
-        parents = User.objects.filter(parents_of_pupils__in=pupils).distinct()
+        total_parents = UserRegistration.objects.filter(school=school, user__roles__name__iexact="Parent").count()
 
         # Retourner les données dans la réponse
         return Response({
             "total_teachers": total_teachers,
             "total_pupils": total_pupils,
-            "total_parents": parents.count(),
+            "total_parents": total_parents,
         })
 
 
@@ -188,16 +180,16 @@ class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'], url_path='active-school-year-students')
     def get_active_school_year_students(self, request):
         # Récupérer le code de l'école de l'utilisateur connecté
-        school_code = get_user_school(request)
+        school = get_user_school(request)
 
         # Récupérer l'année scolaire active de l'école
         try:
-            active_school_year = SchoolYear.objects.get(is_current_year=True, school=school_code)
+            active_school_year = SchoolYear.objects.get(is_current_year=True, school=school)
         except SchoolYear.DoesNotExist:
             return Response({"detail": "Aucune année scolaire active trouvée."}, status=status.HTTP_404_NOT_FOUND)
 
         # Récupérer les inscriptions des élèves pour l'année scolaire active
-        inscriptions = UserRegistration.objects.filter(school_year=active_school_year, classroom__school=school_code)
+        inscriptions = UserRegistration.objects.filter(school_year=active_school_year, classroom__school=school)
 
         # Sérialiser les données des inscriptions
         serializer = InscriptionSerializer(inscriptions, many=True)

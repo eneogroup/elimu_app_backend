@@ -9,6 +9,17 @@ from backend.models.communication_manager import Announcement, Event, Informatio
 from django.core.exceptions import ObjectDoesNotExist
 
 class TagViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for viewing and editing Tag instances.
+
+    Attributes:
+        queryset (QuerySet): The queryset that retrieves all Tag objects.
+        serializer_class (Serializer): The serializer class used to serialize and deserialize Tag objects.
+        permission_classes (list): The list of permission classes that determine access control.
+        search_fields (list): The list of fields that can be searched.
+        ordering_fields (list): The list of fields that can be used for ordering.
+        ordering (list): The default ordering for the queryset.
+    """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -17,6 +28,31 @@ class TagViewSet(viewsets.ModelViewSet):
     ordering = ['name']
 
 class InformationViewSet(viewsets.ModelViewSet):
+    """
+    InformationViewSet is a ModelViewSet for managing Information objects. It provides
+    CRUD operations with custom behavior to ensure that the operations are restricted
+    to the school of the authenticated user.
+    Attributes:
+        serializer_class (InformationSerializer): The serializer class used for the viewset.
+        permission_classes (list): List of permission classes applied to the viewset.
+        search_fields (list): List of fields that can be searched.
+        ordering_fields (list): List of fields that can be used for ordering.
+        ordering (list): Default ordering for the queryset.
+    Methods:
+        get_queryset(self):
+            Returns the queryset filtered by the school of the authenticated user.
+        perform_create(self, serializer):
+            Saves the serializer with the school of the authenticated user. Returns a
+            response with an error message if the school is not found.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the school of the authenticated user.
+        update(self, request, *args, **kwargs):
+            Updates an Information object if it belongs to the school of the authenticated user.
+            Returns a response with an error message if the user does not have permission.
+        destroy(self, request, *args, **kwargs):
+            Deletes an Information object if it belongs to the school of the authenticated user.
+            Returns a response with an error message if the user does not have permission.
+    """
     serializer_class = InformationSerializer
     permission_classes = [permissions.IsAuthenticated,]
     search_fields = ['name']
@@ -50,6 +86,25 @@ class InformationViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 class EventViewSet(viewsets.ModelViewSet):
+    """
+    EventViewSet is a viewset for handling CRUD operations on Event objects. It ensures that events are filtered and associated with the school of the authenticated user.
+    Attributes:
+        serializer_class (EventSerializer): The serializer class used for Event objects.
+        permission_classes (list): List of permission classes that the user must pass to access the viewset.
+        search_fields (list): List of fields that can be searched.
+        ordering_fields (list): List of fields that can be used for ordering.
+    Methods:
+        get_queryset(self):
+            Returns a queryset of Event objects filtered by the school of the authenticated user.
+        perform_create(self, serializer):
+            Associates the created event with the school of the authenticated user.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the school of the authenticated user.
+        update(self, request, *args, **kwargs):
+            Updates an event if it belongs to the school of the authenticated user. Returns a 403 response if the user tries to update an event from a different school.
+        destroy(self, request, *args, **kwargs):
+            Deletes an event if it belongs to the school of the authenticated user. Returns a 403 response if the user tries to delete an event from a different school.
+    """
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
     search_fields = ['name']
@@ -81,6 +136,31 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Announcements.
+    This ViewSet provides the following functionalities:
+    - List, retrieve, create, update, and delete Announcements.
+    - Filter Announcements by the school of the authenticated user.
+    - Ensure that Announcements are associated with the school of the authenticated user.
+    Attributes:
+        serializer_class (AnnouncementSerializer): The serializer class used for Announcement objects.
+        permission_classes (list): List of permission classes that the user must pass to access the view.
+        search_fields (list): List of fields that can be searched.
+        ordering_fields (list): List of fields that can be used for ordering.
+    Methods:
+        get_queryset(self):
+            Returns the queryset of Announcements filtered by the school of the authenticated user.
+        perform_create(self, serializer):
+            Associates the Announcement with the school of the authenticated user before saving.
+        create(self, request, *args, **kwargs):
+            Customizes the creation process to include the school of the authenticated user.
+        update(self, request, *args, **kwargs):
+            Updates an Announcement if it belongs to the school of the authenticated user.
+            Returns a 403 Forbidden response if the user tries to update an Announcement from a different school.
+        destroy(self, request, *args, **kwargs):
+            Deletes an Announcement if it belongs to the school of the authenticated user.
+            Returns a 403 Forbidden response if the user tries to delete an Announcement from a different school.
+    """
     serializer_class = AnnouncementSerializer
     permission_classes = [permissions.IsAuthenticated]
     search_fields = ['title']
@@ -112,6 +192,36 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
 
 class MessageViewSet(viewsets.ModelViewSet):
+    """
+    MessageViewSet is a viewset for handling message-related operations.
+
+    Attributes:
+        queryset (QuerySet): The queryset of all Message objects.
+        serializer_class (Serializer): The serializer class for Message objects.
+        permission_classes (list): The list of permission classes.
+
+    Methods:
+        get_queryset(self):
+            Retrieves the messages received by the authenticated user.
+
+        create(self, request, *args, **kwargs):
+            Allows a user to send a message.
+
+        mark_as_read(self, request, pk=None):
+            Marks a message as read.
+
+        mark_as_unread(self, request, pk=None):
+            Marks a message as unread.
+
+        reply(self, request, pk=None):
+            Replies to a message.
+
+        replies(self, request, pk=None):
+            Retrieves all replies associated with a message.
+
+        delete_message(self, request, pk=None):
+            Deletes a message.
+    """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -61,6 +61,7 @@ class PupilsViewSet(viewsets.ViewSet):
     ViewSet pour gérer la liste et les détails des élèves d'une école.
     """
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
 
     def list(self, request):
         """
@@ -92,6 +93,7 @@ class ParentsViewSet(viewsets.ViewSet):
     ViewSet pour gérer la liste et les détails des parents d'une école.
     """
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
     
     def list(self, request):
         """
@@ -147,8 +149,7 @@ class TeachersViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-
-class RegistrationPupilByMatricul(views.APIView):
+class RegistrationPupilByMatricule(views.APIView):
     """
     Vue API pour créer un élève à partir de son matricule.
     """

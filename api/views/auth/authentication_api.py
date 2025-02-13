@@ -66,6 +66,9 @@ class LogoutAPIView(generics.GenericAPIView):
     L'utilisateur doit être authentifié.
     """
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        return None
 
     def post(self, request, *args, **kwargs):
         try:

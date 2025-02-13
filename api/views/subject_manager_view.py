@@ -11,6 +11,26 @@ from rest_framework.decorators import action
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
+    """
+    SubjectViewSet is a viewset for managing Subject objects.
+    Attributes:
+        permission_classes (list): The list of permission classes that are required to access this viewset.
+        serializer_class (SubjectSerializer): The serializer class used for Subject objects.
+    Methods:
+        get_queryset(self):
+            Returns the queryset of Subject objects filtered by the school of the current user.
+        perform_create(self, serializer):
+            Validates and saves the Subject object. Handles validation errors.
+        update(self, request, *args, **kwargs):
+            Updates an existing Subject object. Validates the data and returns a response with the updated object.
+            Checks if the user has permission to update the subject.
+        destroy(self, request, *args, **kwargs):
+            Deletes an existing Subject object. Returns a response with no content.
+            Checks if the user has permission to delete the subject.
+        retrieve(self, request, *args, **kwargs):
+            Retrieves a specific Subject object. Returns a response with the serialized object.
+            Checks if the user has permission to retrieve the subject.
+    """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SubjectSerializer
 
@@ -31,7 +51,7 @@ class SubjectViewSet(viewsets.ModelViewSet):
         if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette matière."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
-    
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.school != get_user_school(request):
@@ -40,6 +60,30 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
 
 class SchoolScheduleViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing school schedules.
+
+    This ViewSet provides the following actions:
+    - list: Retrieve a list of school schedules.
+    - create: Create a new school schedule.
+    - retrieve: Retrieve a specific school schedule.
+    - update: Update an existing school schedule.
+    - partial_update: Partially update an existing school schedule.
+    - destroy: Delete a school schedule.
+
+    Permissions:
+    - Only authenticated users can access these endpoints.
+
+    Methods:
+    - get_queryset: Returns the queryset of school schedules for the user's school.
+    - perform_create: Saves a new school schedule for the user's school.
+    - update: Updates a school schedule if it belongs to the user's school.
+    - destroy: Deletes a school schedule if it belongs to the user's school.
+    - retrieve: Retrieves a school schedule if it belongs to the user's school.
+
+    Responses:
+    - Returns a 403 Forbidden response if the user attempts to access or modify a schedule that does not belong to their school.
+    """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SchoolScheduleSerializer
 
@@ -69,6 +113,27 @@ class SchoolScheduleViewSet(viewsets.ModelViewSet):
     
 
 class SchoolCalendarViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing school calendars.
+    This ViewSet provides the following actions:
+    - list: Retrieve a list of school calendars.
+    - create: Create a new school calendar.
+    - retrieve: Retrieve a specific school calendar.
+    - update: Update a specific school calendar.
+    - partial_update: Partially update a specific school calendar.
+    - destroy: Delete a specific school calendar.
+    Permissions:
+    - Only authenticated users can access these endpoints.
+    Methods:
+    - get_queryset: Returns the queryset of school calendars filtered by the user's school.
+    - perform_create: Saves a new school calendar with the user's school.
+    - update: Updates a school calendar if it belongs to the user's school.
+    - destroy: Deletes a school calendar if it belongs to the user's school.
+    - retrieve: Retrieves a school calendar if it belongs to the user's school.
+    Responses:
+    - Returns a 403 Forbidden response if the user attempts to access or modify a calendar that does not belong to their school.
+    """
+    
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SchoolCalendarSerializer
 
@@ -98,11 +163,29 @@ class SchoolCalendarViewSet(viewsets.ModelViewSet):
 
 
 class SchoolHolidayViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing school holidays.
+    This ViewSet provides the following actions:
+    - list: Retrieve a list of school holidays.
+    - create: Create a new school holiday.
+    - retrieve: Retrieve a specific school holiday.
+    - update: Update a specific school holiday.
+    - partial_update: Partially update a specific school holiday.
+    - destroy: Delete a specific school holiday.
+    Permissions:
+    - Only authenticated users can access these endpoints.
+    Methods:
+    - get_queryset: Returns the queryset of school holidays filtered by the user's school.
+    - perform_create: Saves a new school holiday with the user's school.
+    - update: Updates a school holiday if it belongs to the user's school.
+    - destroy: Deletes a school holiday if it belongs to the user's school.
+    - retrieve: Retrieves a school holiday if it belongs to the user's school.
+    """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SchoolHolidaySerializer
 
     def get_queryset(self):
-        return SchoolHoliday.objects.filter(school=self.request.user.teacherschool.school_code)
+        return SchoolHoliday.objects.filter(school=get_user_school(self.request))
 
     def perform_create(self, serializer):
         serializer.save(school=get_user_school(self.request))
@@ -128,6 +211,24 @@ class SchoolHolidayViewSet(viewsets.ModelViewSet):
 
 
 class SchoolProgramViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing SchoolProgram instances.
+    This ViewSet provides the following actions:
+    - list: Retrieve a list of SchoolProgram instances.
+    - create: Create a new SchoolProgram instance.
+    - retrieve: Retrieve a specific SchoolProgram instance.
+    - update: Update a specific SchoolProgram instance.
+    - partial_update: Partially update a specific SchoolProgram instance.
+    - destroy: Delete a specific SchoolProgram instance.
+    Permissions:
+    - Only authenticated users can access these actions.
+    Methods:
+    - get_queryset: Returns the queryset of SchoolProgram instances filtered by the user's school.
+    - perform_create: Saves a new SchoolProgram instance with the user's school.
+    - update: Updates a SchoolProgram instance if it belongs to the user's school.
+    - destroy: Deletes a SchoolProgram instance if it belongs to the user's school.
+    - retrieve: Retrieves a SchoolProgram instance if it belongs to the user's school.
+    """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SchoolProgramSerializer
 
@@ -158,6 +259,27 @@ class SchoolProgramViewSet(viewsets.ModelViewSet):
 
 
 class SubjectAttributionViewSet(viewsets.ModelViewSet):
+    """
+    SubjectAttributionViewSet is a viewset for managing SubjectAttribution objects.
+    Attributes:
+        serializer_class (SubjectAttributionSerializer): The serializer class used for SubjectAttribution objects.
+        permission_classes (list): The list of permission classes that are required to access this viewset.
+    Methods:
+        get_queryset(self):
+            Returns the queryset of SubjectAttribution objects filtered by the school of the current user.
+        create(self, request, *args, **kwargs):
+            Creates a new SubjectAttribution object. Validates the data and returns a response with the created object.
+        perform_create(self, serializer):
+            Validates and saves the SubjectAttribution object. Handles validation errors.
+        update(self, request, *args, **kwargs):
+            Updates an existing SubjectAttribution object. Validates the data and returns a response with the updated object.
+        perform_update(self, serializer):
+            Validates and updates the SubjectAttribution object. Handles validation errors.
+        destroy(self, request, *args, **kwargs):
+            Deletes an existing SubjectAttribution object. Returns a response with no content.
+        perform_destroy(self, instance):
+            Deletes the SubjectAttribution object.
+    """
     serializer_class = SubjectAttributionSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -207,6 +329,27 @@ class SubjectAttributionViewSet(viewsets.ModelViewSet):
 
 
 class SchoolReportCardViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing school report cards.
+    Endpoints:
+    - `GET /schoolreportcard/by-student/<student_id>/`: Get report cards by student.
+    - `GET /schoolreportcard/by-subject/<subject_id>/`: Get report cards by subject.
+    - `GET /schoolreportcard/average-by-student-subject/<student_id>/<subject_id>/`: Get average grade for a student in a subject.
+    - `GET /schoolreportcard/passing-status/<student_id>/<subject_id>/`: Get passing status for a student in a subject.
+    - `GET /schoolreportcard/summary/<student_id>/`: Get summary of report cards for a student.
+    - `GET /schoolreportcard/by-school/<school_id>/`: Get report cards by school.
+    Methods:
+    - `get_queryset()`: Returns the queryset of report cards filtered by the user's school.
+    - `perform_create(serializer)`: Saves a new report card with the user's school.
+    - `perform_update(serializer)`: Updates an existing report card with the user's school.
+    - `perform_destroy(instance)`: Deletes a report card.
+    - `get_by_student(request, student_id)`: Returns report cards for a specific student.
+    - `get_by_subject(request, subject_id)`: Returns report cards for a specific subject.
+    - `get_average_by_student_subject(request, student_id, subject_id)`: Returns the average grade for a student in a specific subject.
+    - `get_passing_status(request, student_id, subject_id)`: Returns the passing status for a student in a specific subject.
+    - `get_summary(request, student_id)`: Returns a summary of report cards for a specific student.
+    - `get_by_school(request, school_id)`: Returns report cards for a specific school.
+    """
     serializer_class = SchoolReportCardSerializer
     permission_classes = [permissions.IsAuthenticated]
     
