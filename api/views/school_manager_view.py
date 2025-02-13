@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions, status, views
 from rest_framework.response import Response
 from backend.constant import get_user_school
@@ -65,13 +66,13 @@ class SchoolYearViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!=request.user.school_code:
+        if instance.school!=get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette année scolaire."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!=request.user.school_code:
+        if instance.school!=get_user_school(self.request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette année scolaire."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
@@ -84,8 +85,8 @@ class ActiveSchoolYearViewSet(viewsets.ReadOnlyModelViewSet):
         """
         Récupérer l'année scolaire active pour l'école de l'utilisateur connecté.
         """
-        user = self.request.user
-        return SchoolYear.objects.filter(is_current_year=True, school=user.school_code)
+        school = get_user_school(self.request)
+        return get_object_or_404(SchoolYear, is_current_year=True, school=school)
 
     def list(self, request, *args, **kwargs):
         """
@@ -113,15 +114,16 @@ class ClassroomViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!=request.user.school_code:
+        if instance.school!=get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette salle de classe."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!=request.user.school_code:
+        if instance.school!=get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette salle de classe."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+
 
 class InscriptionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -132,13 +134,13 @@ class InscriptionViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.classroom.school != request.user.school_code:
+        if instance.classroom.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette inscription."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.classroom.school != request.user.school_code:
+        if instance.classroom.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette inscription."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
@@ -149,7 +151,7 @@ class InscriptionViewSet(viewsets.ModelViewSet):
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.classroom.school != request.user.school_code:
+        if instance.classroom.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher cette inscription."}, status=status.HTTP_403_FORBIDDEN)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -186,7 +188,7 @@ class ActiveSchoolYearStudentsViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'], url_path='active-school-year-students')
     def get_active_school_year_students(self, request):
         # Récupérer le code de l'école de l'utilisateur connecté
-        school_code = request.user.school_code
+        school_code = get_user_school(request)
 
         # Récupérer l'année scolaire active de l'école
         try:

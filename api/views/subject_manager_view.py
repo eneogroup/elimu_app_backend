@@ -22,22 +22,21 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette matière."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette matière."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher cette matière."}, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
-
 
 
 class SchoolScheduleViewSet(viewsets.ModelViewSet):
@@ -52,19 +51,19 @@ class SchoolScheduleViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cet emploi du temps."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cet emploi du temps."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher cet emploi du temps."}, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
     
@@ -81,19 +80,19 @@ class SchoolCalendarViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier ce calendrier."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer ce calendrier."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher ce calendrier."}, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
 
@@ -110,19 +109,19 @@ class SchoolHolidayViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier ce congé."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer ce congé."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher ce congé."}, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
 
@@ -140,19 +139,19 @@ class SchoolProgramViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier ce programme."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer ce programme."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas afficher ce programme."}, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
     
@@ -227,21 +226,21 @@ class SchoolReportCardViewSet(viewsets.ModelViewSet):
     # Endpoint pour obtenir les rapports par élève
     @action(detail=False, methods=['get'], url_path='by-student/(?P<student_id>[^/.]+)')
     def get_by_student(self, request, student_id=None):
-        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=request.user.school_code)
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=get_user_school(request))
         serializer = self.get_serializer(report_cards, many=True)
         return Response(serializer.data)
 
     # Endpoint pour obtenir les rapports par matière
     @action(detail=False, methods=['get'], url_path='by-subject/(?P<subject_id>[^/.]+)')
     def get_by_subject(self, request, subject_id=None):
-        report_cards = SchoolReportCard.objects.filter(subject__id=subject_id, school=request.user.school_code)
+        report_cards = SchoolReportCard.objects.filter(subject__id=subject_id, school=get_user_school(request))
         serializer = self.get_serializer(report_cards, many=True)
         return Response(serializer.data)
 
     # Endpoint pour calculer la moyenne pour un élève dans une matière
     @action(detail=False, methods=['get'], url_path='average-by-student-subject/(?P<student_id>[^/.]+)/(?P<subject_id>[^/.]+)')
     def get_average_by_student_subject(self, request, student_id=None, subject_id=None):
-        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=request.user.school_code)
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=get_user_school(request))
         if report_cards.exists():
             average = sum(int(report_card.grade) for report_card in report_cards) / len(report_cards)
             return Response({"average_grade": average})
@@ -250,7 +249,7 @@ class SchoolReportCardViewSet(viewsets.ModelViewSet):
     # Endpoint pour obtenir le statut de réussite/échec d'un élève dans une matière
     @action(detail=False, methods=['get'], url_path='passing-status/(?P<student_id>[^/.]+)/(?P<subject_id>[^/.]+)')
     def get_passing_status(self, request, student_id=None, subject_id=None):
-        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=request.user.school_code)
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, subject__id=subject_id, school=get_user_school(request))
         if report_cards.exists():
             average_grade = sum(int(report_card.grade) for report_card in report_cards) / len(report_cards)
             if average_grade >= 10:
@@ -262,7 +261,7 @@ class SchoolReportCardViewSet(viewsets.ModelViewSet):
     # Endpoint pour obtenir un résumé du bulletin d'un élève
     @action(detail=False, methods=['get'], url_path='summary/(?P<student_id>[^/.]+)')
     def get_summary(self, request, student_id=None):
-        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=request.user.school_code)
+        report_cards = SchoolReportCard.objects.filter(student__id=student_id, school=get_user_school(request))
         if report_cards.exists():
             summary = {
                 "total_subjects": report_cards.count(),

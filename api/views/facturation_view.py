@@ -47,13 +47,13 @@ class SchoolInvoiceViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!= request.user.school_code:
+        if instance.school!= get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette facture."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school!= request.user.school_code:
+        if instance.school!= get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette facture."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
@@ -122,20 +122,20 @@ class SchoolExpenseViewSet(viewsets.ModelViewSet):
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas modifier cette frais de scolarité."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.school != request.user.school_code:
+        if instance.school != get_user_school(request):
             return Response({"detail": "Vous ne pouvez pas supprimer cette frais de scolarité."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
     
     # Action pour l'historique des dépenses
     @action(detail=False, methods=['get'], url_path='expense-history')
     def expense_history(self, request):
-        school = request.user.school_code
+        school = get_user_school(request)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
 
@@ -153,7 +153,7 @@ class SchoolExpenseViewSet(viewsets.ModelViewSet):
     # Action pour le suivi global des dépenses
     @action(detail=False, methods=['get'], url_path='total-expenses')
     def total_expenses(self, request):
-        school = request.user.school_code
+        school = get_user_school(request)
         start_date = request.query_params.get('start_date', None)
         end_date = request.query_params.get('end_date', None)
 
