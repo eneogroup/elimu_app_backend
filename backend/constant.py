@@ -1,4 +1,7 @@
 from rest_framework.exceptions import ValidationError
+
+from api.serializers.school_manager_serializer import SchoolSerializer
+from backend.models.school_manager import School
 days_of_the_weeks = [
     ('lundi', 'Lundi'),
     ('mardi', 'Mardi'),
@@ -127,7 +130,14 @@ types_evaluations = [
 
 
 def get_user_school(request):
-    school = request.session.get('school')
-    if not school:
+    # Récupérer les informations de l'école à partir du token JWT
+    school_data = request.auth.get('school')
+    if not school_data:
         raise ValidationError({"detail": "École non trouvée."})
+    
+    # Récupérer l'objet School existant à partir de la base de données
+    try:
+        school = School.objects.get(id=school_data['id'])
+    except School.DoesNotExist:
+        raise ValidationError({"detail": "École non trouvée dans la base de données."})
     return school

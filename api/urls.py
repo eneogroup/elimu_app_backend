@@ -53,7 +53,7 @@ router.register(r'user/account/view/current-user', CurrentUserViewSet, basename=
 router.register(r'auth', LoginViewSet, basename='auth')
 
 urlpatterns = [
-    path('admin&manager/account/view', include(router.urls)),
+    path('admin&manager/account/view/', include(router.urls)),
     path('auth/logout/', LogoutAPIView.as_view(), name='auth_logout'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

@@ -2,6 +2,10 @@ from rest_framework import serializers
 from backend.models.account import User
 from backend.models.school_manager import School, SchoolGeneralConfig, UserRegistration, SchoolAbsence, SchoolYear, Classroom, StudentEvaluation
 
+class SchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = '__all__'
 
 class SchoolYearSerializer(serializers.ModelSerializer):
     class Meta:
